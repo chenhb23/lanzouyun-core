@@ -22,8 +22,8 @@ function parseJson(str) {
   }
 }
 
-interface RequestExtraOptions {
-  body?: Record<string, any> | FormData | string
+interface RequestExtraOptions<B extends Record<string, any> | FormData | string> {
+  body?: B
   onData?: (bytes: number) => void
   signal?: AbortSignal
   /**
@@ -40,9 +40,9 @@ interface ResponseOptions<T> extends IncomingMessage {
  * 请求函数，不用做下载
  * todo: cookie
  */
-export function request<T = any>(
+export function request<T = any, D = any>(
   url: string,
-  {body, onData, signal, encoding, ...options} = {} as RequestOptions & RequestExtraOptions
+  {body, onData, signal, encoding, ...options} = {} as RequestOptions & RequestExtraOptions<D>
 ): Promise<ResponseOptions<T>> {
   return new Promise((resolve, reject) => {
     const headers = {...baseHeaders, cookie, ...options.headers}
@@ -70,7 +70,7 @@ export function request<T = any>(
       }
       body.pipe(req)
     } else {
-      if (body) req.write(typeof body === 'object' ? querystring.stringify(body) : body)
+      if (body) req.write(typeof body === 'object' ? querystring.stringify(body as any) : body)
       req.end()
     }
   })

@@ -1,9 +1,3 @@
-interface LzResponse<T> {
-  zt: number
-  info: string
-  text: T
-}
-
 interface PwdShareFile {
   dom: string // https://vip.d0.baidupan.com
   inf: string // DF1E5B4D-459A-4295-B441-61A93D0CCCA7.png (4).tar

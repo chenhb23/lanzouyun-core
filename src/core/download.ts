@@ -92,7 +92,7 @@ export interface DownloadOption {
   /**
    * 进度回调
    */
-  onProgress?: (resolve: number, total: number) => void
+  onProgress?: (resolveBytes: number, totalBytes: number) => void
 }
 
 /**

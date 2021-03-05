@@ -5,6 +5,7 @@ import {request} from '../request'
 import {mkdir} from './mkdir'
 import config from '../../.lanzou.json'
 import {split} from '../util/split'
+import {FolderDir, lsFolder} from './ls'
 
 export interface UploadOption {
   path: string
@@ -15,7 +16,15 @@ export interface UploadOption {
 
   folderId?: string
   onStateChange?: () => void
-  onProgress?: (resolve: number, total: number) => void
+  onProgress?: (value: {
+    resolveBytes: number
+    totalBytes: number
+    currentResolveBytes: number
+    currentTotalBytes: number
+    name: string
+    current: number // 当前第几个文件
+    length: number
+  }) => void
 }
 
 interface UploadFile {
@@ -40,6 +49,7 @@ interface UploadList extends UploadFile {
     upload({path: 'DF1E5B4D-459A-4295-B441-61A93D0CCCA7.png'})
   })
  ```
+ * todo: 支持上传文件夹
  */
 export async function upload(option: UploadOption) {
   if (!(option.size && option.name)) {
@@ -48,6 +58,8 @@ export async function upload(option: UploadOption) {
     option.name = option.name || path.basename(option.path)
     option.lastModifiedDate = option.lastModifiedDate || stat.mtime
   }
+  option.folderId = option.folderId || '-1'
+
   const file: UploadList = {
     lastModifiedDate: option.lastModifiedDate,
     type: option.type,
@@ -77,14 +89,20 @@ export async function upload(option: UploadOption) {
   }))
 
   if (file.list.length > 1) {
-    // todo: mkdir 之前先 ls option.folderId 的目录下没有 file.name 的文件夹，有则返回
-    const folderId = await mkdir({
-      parentId: option.folderId,
-      folderName: file.name,
-    })
+    const list = await lsFolder({folderId: option.folderId, limit: 1})
+    const item = list.find(value => value.type === 'dir' && value.name === file.name)
+
+    const folderId = item
+      ? (item as FolderDir).folderId
+      : await mkdir({
+          parentId: option.folderId,
+          folderName: file.name,
+        })
     file.list = file.list.map(value => ({...value, folderId}))
   }
 
+  const total = file.list.reduce((prev, value) => prev + value.size, 0)
+  let finished = 0
   for (let i = 0; i < file.list.length; i++) {
     const item = file.list[i]
     const fr = fs.createReadStream(item.path, item.endByte ? {start: item.startByte, end: item.endByte} : undefined)
@@ -101,11 +119,24 @@ export async function upload(option: UploadOption) {
 
     const {response} = await request<LzResponse<UploadRes[]>>(`https://up.woozooo.com/fileup.php`, {
       body: form,
-      // onData: bytes => {
-      //   console.log(`${byteToSize(bytes)} / ${byteToSize(item.size)}`)
-      // },
+      ...(typeof option.onProgress === 'function'
+        ? {
+            onData: bytes => {
+              option.onProgress({
+                resolveBytes: finished + bytes,
+                totalBytes: total,
+                currentResolveBytes: bytes,
+                currentTotalBytes: item.size,
+                name: item.name,
+                current: i + 1,
+                length: file.list.length,
+              })
+            },
+          }
+        : {}),
     })
     if (response.zt == 1 && response.text?.length) {
+      finished += item.size
       console.log(response.text.map(value => `上传成功: ${value.f_id}, ${value.name_all}`))
     }
   }

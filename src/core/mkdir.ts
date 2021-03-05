@@ -16,7 +16,6 @@ export function mkdir(option: MkdirOption): Promise<string> {
       folder_description: option.folderDescription,
     },
   }).then(({response}) => {
-    console.log(response)
     if (response.zt != 1) {
       throw new Error(response.info)
     }

@@ -1,8 +1,7 @@
 import {delay, html, match, parseUrl} from '../util/utils'
 import {request} from '../request'
-import {download} from './download'
 
-export interface LsOption {
+export interface LsShareOption {
   url: string
   pwd?: string
   /**
@@ -12,7 +11,7 @@ export interface LsOption {
 }
 
 export interface FileList extends UrlFile {
-  html: string
+  html?: string
   list: UrlFile[]
 }
 
@@ -28,7 +27,7 @@ export interface UrlFile {
 /**
  * 列出分享文件
  */
-export async function lsShareUrl(option: LsOption): Promise<FileList> {
+export async function lsShareUrl(option: LsShareOption): Promise<FileList> {
   const {id, origin} = parseUrl(option.url)
   const shareHTML = await html(option.url)
   const iframe = match.iframe(shareHTML)
@@ -90,7 +89,7 @@ export async function lsShareUrl(option: LsOption): Promise<FileList> {
         body: {lx, fid, uid, rep, t, k, up, pg: pg++, ...(isPwd ? {ls, pwd: option.pwd} : {})},
       })
 
-      if (response.zt == 1 && response.text.length) {
+      if (response.zt == 1 && response.text?.length) {
         file.list.push(
           ...response.text.map<UrlFile>(item => {
             const url = `${origin}/${item.id}`
@@ -103,6 +102,8 @@ export async function lsShareUrl(option: LsOption): Promise<FileList> {
       if (option.limit > 0 && pg > option.limit) break
     }
     return file
+  } else {
+    throw new Error('页面解析出错，文件可能取消分享了')
   }
 }
 
@@ -126,3 +127,87 @@ export async function lsShareUrl(option: LsOption): Promise<FileList> {
 //     console.log(`finish: `, item.name)
 //   }
 // })
+
+export interface FolderDir {
+  type: 'dir'
+  folderId: string
+  description: string
+  name: string
+  pwd: string // ls 的时候没有，需要请求接口获取
+  url: string // 分享的 url
+  id: string // url 后面的 id
+}
+
+export interface FolderFile {
+  type: 'file'
+  fileId: string
+  name: string
+  pwd: string // ls 的时候没有，需要请求接口获取
+  url: string // 分享的 url
+  id: string // url 后面的 id
+  downs: string // 下载次数
+  size: string // 易于阅读的大小 13.2 M
+  time: string // 字符串日期
+}
+
+export function lsDir(folderId: string): Promise<FolderDir[]> {
+  return request<LzResponse<Task47Data[]>, Task47>('https://up.woozooo.com/doupload.php', {
+    body: {task: 47, folder_id: folderId},
+  }).then(
+    ({response}) =>
+      response.text?.map?.(value => ({
+        type: 'dir',
+        folderId: value.fol_id,
+        name: value.name,
+        description: value.folder_des,
+        id: '',
+        url: '',
+        pwd: '',
+      })) ?? []
+  )
+}
+
+async function lsFile(folderId: string, limit: number): Promise<FolderFile[]> {
+  let pg = 1
+  const list: FolderFile[] = []
+  while (true) {
+    const {response} = await request<LzResponse<Task5Data[]>, Task5>('https://up.woozooo.com/doupload.php', {
+      body: {task: 5, folder_id: folderId, pg: pg++},
+    })
+    if (response.zt == 1 && response.text?.length) {
+      list.push(
+        ...response.text.map<FolderFile>(value => ({
+          type: 'file',
+          fileId: value.id,
+          name: value.name_all,
+          downs: value.downs,
+          size: value.size,
+          time: value.time,
+          pwd: '',
+          url: '',
+          id: '',
+        }))
+      )
+    } else break
+    if (limit > 0 && pg > limit) break
+  }
+
+  return list
+}
+
+export interface LsFolderOption {
+  folderId?: string
+  limit?: number // 只限制文件页数，不显示文件夹数量
+}
+
+/**
+ * 列出文件夹下的 文件夹和文件
+ * @example
+ ```
+ await lsFolder({folderId, limit: 1})
+ ```
+ */
+export async function lsFolder(option: LsFolderOption): Promise<(FolderDir | FolderFile)[]> {
+  const [dir, file] = await Promise.all([lsDir(option.folderId), lsFile(option.folderId, option.limit)])
+  return [...dir, ...file]
+}
