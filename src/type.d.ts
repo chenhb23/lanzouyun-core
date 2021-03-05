@@ -21,3 +21,16 @@ interface ShareFolderFile {
   duan: string // 'img602',
   p_ico: number // 0
 }
+
+interface UploadRes {
+  downs: string // "0"
+  f_id: string // "izUmEmhxu7e"
+  icon: string // "zip"
+  id: string // "39516164"
+  is_newd: string // "https://wws.lanzous.com"
+  name: string // "IMG_885BA7CB7A49-1.jpeg.l..."
+  name_all: string // "IMG_885BA7CB7A49-1.jpeg.lzy.zip"
+  onof: string // "0"
+  size: string // "1.1 M"
+  time: string // "0 秒前"
+}

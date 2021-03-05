@@ -1,12 +1,10 @@
 import child_process from 'child_process'
 import readline from 'readline'
 import fs from 'fs'
-import os from 'os'
-import path from 'path'
 
 const lzy = 'https://www.lanzou.com'
 
-const authFile = path.resolve(os.homedir(), '.lanzou_auth')
+const authFile = '.lanzou_auth'
 
 export let cookie = fs.existsSync(authFile) ? fs.readFileSync(authFile).toString() : ''
 
@@ -23,9 +21,16 @@ function open(url: string) {
 
 /**
  * 返回 cookie
+ * todo: 如果入参不为空，则不打开浏览器，直接设置 cookie
  */
-export function login(): Promise<string> {
+export function login(userCookie?: string): Promise<string> {
   return new Promise((resolve, reject) => {
+    // if (userCookie) {
+    //   if (setCookie(userCookie)) {
+    //     return resolve(userCookie)
+    //   }
+    // }
+
     if (!cookie) {
       open(lzy)
       console.log('登录后请将 cookie 复制到这里:')
@@ -54,7 +59,7 @@ export function setCookie(value: string) {
     return false
   }
   cookie = value
-  fs.writeFileSync(path.resolve(os.homedir(), '.lanzou_auth'), value)
+  fs.writeFileSync(authFile, value)
   console.log('cookie 设置完成')
   return true
 }

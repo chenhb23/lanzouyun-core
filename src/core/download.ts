@@ -1,9 +1,10 @@
-import {request} from './request'
+import {request} from '../request'
 import https from 'https'
 import path from 'path'
 import fs from 'fs'
-import {parseUrl, html, match} from './util'
+import {parseUrl, html, match} from '../util/utils'
 import EventEmitter from 'events'
+import {Chain} from '../util/Chain'
 
 export interface PageOptions {
   /**
@@ -40,7 +41,6 @@ export async function getPageDownloadUrl(option: PageOptions): Promise<string> {
     const ves = match.ves(downHTML)
 
     const {response} = await request<PwdShareFile>(`${origin}/ajaxm.php`, {
-      method: 'POST',
       headers: {referer: iframeUrl}, // 获取下载链接需要 referer，防盗链
       body: {
         action: 'downprocess',
@@ -54,7 +54,6 @@ export async function getPageDownloadUrl(option: PageOptions): Promise<string> {
   } else if (data) {
     if (!option.pwd) throw new Error('密码为空')
     const {response} = await request<PwdShareFile>(`${origin}/ajaxm.php`, {
-      method: 'POST',
       headers: {referer: option.url},
       body: data + option.pwd,
     })
@@ -69,6 +68,7 @@ export async function getPageDownloadUrl(option: PageOptions): Promise<string> {
  */
 export function getRealDownloadUrl(pageDownloadUrl: string) {
   return request(pageDownloadUrl, {
+    method: 'GET',
     headers: {accept: 'application/octet-stream, */*; q=0.01'},
   }).then(({headers}) => headers.location)
 }
@@ -113,49 +113,52 @@ export interface DownloadOption {
 export function download(option: DownloadOption) {
   const event = new EventEmitter()
   return {
-    cancel() {
-      event.emit('cancel')
-    },
+    cancel: () => event.emit('cancel'),
     promise: new Promise<void>((resolve, reject) => {
-      getPageDownloadUrl(option)
-        .then(url => {
-          option.onStateChange?.({state: 1, url})
-          return getRealDownloadUrl(url)
-        })
-        .then(realUrl => {
-          option.onStateChange?.({state: 2, url: realUrl})
+      const chain = new Chain()
+      event.once('cancel', () => {
+        chain.cancel()
+        option.onStateChange?.({state: 6})
+        reject('取消下载')
+      })
+
+      chain
+        .add(() => getPageDownloadUrl(option))
+        .add(url => (option.onStateChange?.({state: 1, url}), url))
+        .add(url => getRealDownloadUrl(url))
+        .add(realUrl => (option.onStateChange?.({state: 2, url: realUrl}), realUrl))
+        .add(realUrl =>
           https.get(realUrl, res => {
             const total = +res.headers['content-length']
             const fileName = decodeURIComponent(
               res.headers['content-disposition'].split(';')?.[1]?.split('filename=')?.[1]?.trim()
             )
-
             option.onStateChange?.({state: 3, length: total, disposition: fileName})
+
             fs.mkdirSync(path.dirname(option.path), {recursive: true})
             const file = fs.createWriteStream(option.path)
-            let len = 0
 
             event.once('cancel', () => {
               res.destroy()
               file.destroy()
-              reject('取消下载')
-              option.onStateChange?.({state: 6})
             })
 
             // todo: 事件节流
+            let len = 0
             res.on('data', chunk => option.onProgress?.((len += chunk.length), total))
             res.on('end', () => {
               file.end() // 将内存中的内容全部写入，然后关闭文件
-              resolve()
               option.onStateChange?.({state: 4})
+              resolve()
             })
             res.on('error', () => {
-              reject()
               option.onStateChange?.({state: 5})
+              reject()
             })
             res.pipe(file)
           })
-        })
+        )
+        .start()
     }),
   }
 }

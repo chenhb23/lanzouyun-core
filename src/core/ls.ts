@@ -1,5 +1,5 @@
-import {delay, html, match, parseUrl} from './util'
-import {request} from './request'
+import {delay, html, match, parseUrl} from '../util/utils'
+import {request} from '../request'
 import {download} from './download'
 
 export interface LsOption {
@@ -59,7 +59,6 @@ export async function lsShareUrl(option: LsOption): Promise<FileList> {
     if (!option.pwd) throw new Error('密码为空')
     // 请求网页主要为了获取文件名
     const {response} = await request<PwdShareFile>(`${origin}/ajaxm.php`, {
-      method: 'POST',
       headers: {referer: option.url},
       body: data + option.pwd,
     })
@@ -88,7 +87,6 @@ export async function lsShareUrl(option: LsOption): Promise<FileList> {
     file.name = title
     while (true) {
       const {response} = await request<LzResponse<ShareFolderFile[]>>(`${origin}/filemoreajax.php`, {
-        method: 'POST',
         body: {lx, fid, uid, rep, t, k, up, pg: pg++, ...(isPwd ? {ls, pwd: option.pwd} : {})},
       })
 
@@ -108,23 +106,23 @@ export async function lsShareUrl(option: LsOption): Promise<FileList> {
   }
 }
 
-const option = {url: 'https://wws.lanzous.com/b01u134hc', pwd: 'a02g'} // 图片
+// const option = {url: 'https://wws.lanzous.com/b01u134hc', pwd: 'a02g'} // 图片
 // const option = {url: 'https://wws.lanzous.com/b01tpeg7i'} // pan
 // const option = {url: 'https://wws.lanzous.com/iwsPQmg5sfg', pwd: 'g24j'} // pwd file
 // const option = {url: 'https://wws.lanzous.com/iIsdEmg3iti'} // 压缩文件
 
 // const option = {url: 'https://wws.lanzous.com/b01tpej7g', pwd: '8cup'} // 165
 
-lsShareUrl(option).then(async value => {
-  for (const item of value.list) {
-    const handle = download({
-      ...item,
-      path: item.name,
-      onStateChange: value1 => {
-        console.log(value1)
-      },
-    })
-    await handle.promise
-    console.log(`finish: `, item.name)
-  }
-})
+// lsShareUrl(option).then(async value => {
+//   for (const item of value.list) {
+//     const handle = download({
+//       ...item,
+//       path: item.name,
+//       onStateChange: value1 => {
+//         console.log(value1)
+//       },
+//     })
+//     await handle.promise.catch(reason => console.log(reason))
+//     console.log(`finish: `, item.name)
+//   }
+// })

@@ -1,7 +1,8 @@
 import https, {RequestOptions} from 'https'
 import FormData from 'form-data'
 import * as querystring from 'querystring'
-import http from 'node:http'
+import {IncomingMessage} from 'http'
+import {cookie} from './core/auth'
 
 export const baseHeaders = {
   accept: 'application/json, text/javascript, */*; q=0.01',
@@ -31,7 +32,7 @@ interface RequestExtraOptions {
   encoding?: BufferEncoding
 }
 
-interface ResponseOptions<T> extends http.IncomingMessage {
+interface ResponseOptions<T> extends IncomingMessage {
   response: T
 }
 
@@ -44,11 +45,11 @@ export function request<T = any>(
   {body, onData, signal, encoding, ...options} = {} as RequestOptions & RequestExtraOptions
 ): Promise<ResponseOptions<T>> {
   return new Promise((resolve, reject) => {
-    const headers = {...baseHeaders, ...options.headers}
+    const headers = {...baseHeaders, cookie, ...options.headers}
     if (body instanceof FormData) {
       Object.assign(headers, body.getHeaders())
     }
-    const req = https.request(url, {...options, headers: headers}, res => {
+    const req = https.request(url, {method: 'POST', ...options, headers: headers}, res => {
       let buf = ''
       res.setEncoding(encoding)
       res.on('data', chunk => (buf += chunk))

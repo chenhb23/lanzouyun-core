@@ -1,4 +1,4 @@
-import {request} from './request'
+import {request} from '../request'
 
 /**
  * 延时函数
@@ -46,7 +46,7 @@ export const match = {
  * 请求url，返回 text
  */
 export function html(url: string) {
-  return request<string>(url).then(value => value.response)
+  return request<string>(url, {method: 'GET'}).then(value => value.response)
 }
 
 export function parseUrl(url: string) {
@@ -55,4 +55,52 @@ export function parseUrl(url: string) {
     origin: uri.origin,
     id: uri.pathname.replace(/^\//, ''),
   }
+}
+
+/**
+ * 3 M -> 3096
+ */
+export function sizeToByte(size: string | number) {
+  if (typeof size === 'string') {
+    const getUnit = unit =>
+      ({
+        get b() {
+          return 1
+        },
+        get k() {
+          return 1024
+        },
+        get m() {
+          return this.k * 1024
+        },
+        get g() {
+          return this.m * 1024
+        },
+        get t() {
+          return this.g * 1024
+        },
+      }[unit] || 1)
+    const [_, num, unit] = size
+      .toLowerCase()
+      .replace(' ', '')
+      .match(/^(\d+\.?\d*)([bkmgt]?)$/)
+
+    return +num * getUnit(unit)
+  }
+
+  return size
+}
+
+/**
+ * 3096 -> 3k
+ */
+export function byteToSize(byte: number) {
+  const formatSize = (total, persize) => {
+    return Math.floor((total * 100) / persize) / 100
+  }
+
+  if (byte < sizeToByte('1k')) return `0`
+  if (byte < sizeToByte('1m')) return `${formatSize(byte, sizeToByte('1k'))} k`
+  if (byte < sizeToByte('1g')) return `${formatSize(byte, sizeToByte('1m'))} M`
+  if (byte < sizeToByte('1t')) return `${formatSize(byte, sizeToByte('1g'))} G`
 }

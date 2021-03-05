@@ -1,13 +1,17 @@
 {
-  "name": "@lanzouyun/core",
+  "name": "lanzouyun-core",
   "version": "0.0.1",
-  "description": "",
+  "description": "nodejs 版的蓝奏云 sdk",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc"
   },
-  "keywords": ["lanzouyun", "lanzou", "api", "sdk"],
+  "keywords": [
+    "lanzouyun",
+    "lanzou",
+    "sdk"
+  ],
   "author": "chenhb23",
   "license": "MIT",
   "dependencies": {
