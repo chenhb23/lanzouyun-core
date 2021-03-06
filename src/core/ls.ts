@@ -197,7 +197,7 @@ async function lsFile(folderId: string, limit: number): Promise<FolderFile[]> {
 
 export interface LsFolderOption {
   folderId?: string
-  limit?: number // 只限制文件页数，不显示文件夹数量
+  limit?: number // 只限制文件页数，不显示文件夹数量，最小 1
 }
 
 /**

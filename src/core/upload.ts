@@ -6,13 +6,14 @@ import {mkdir} from './mkdir'
 import config from '../../.lanzou.json'
 import {split} from '../util/split'
 import {FolderDir, lsFolder} from './ls'
+import {promisify} from 'util'
+import {delay} from '../util/utils'
+
+const fstat = promisify(fs.stat)
+const readdir = promisify(fs.readdir)
 
 export interface UploadOption {
   path: string
-  size?: number // 文件大小（如果外部传入则不会重新读取）
-  name?: string // 文件名称（如果外部传入则不会重新读取）
-  type?: string // 文件类型（如果外部传入则不会重新读取）
-  lastModifiedDate?: Date // 文件类型（如果外部传入则不会重新读取）
 
   folderId?: string
   onStateChange?: () => void
@@ -22,7 +23,7 @@ export interface UploadOption {
     currentResolveBytes: number
     currentTotalBytes: number
     name: string
-    current: number // 当前第几个文件
+    current: number // 当前第几个文件, todo: 参数
     length: number
   }) => void
 }
@@ -43,29 +44,56 @@ interface UploadList extends UploadFile {
 }
 
 /**
+ * 确保目录存在，并返回 folderId
+ * 默认查找 -1 的目录
+ */
+async function ensureFolder(option: {folderId: string; folderName: string}): Promise<string> {
+  const folder = (await lsFolder({folderId: option.folderId || '-1', limit: 1})).find(
+    value => value.type === 'dir' && value.name === option.folderName
+  )
+  return folder ? (folder as FolderDir).folderId : mkdir({parentId: option.folderId, folderName: option.folderName})
+}
+
+/**
+ * 上传文件或文件夹
+ */
+export async function upload(option: UploadOption) {
+  const stat = await fstat(option.path)
+
+  if (stat.isDirectory()) {
+    const folderId = await ensureFolder({folderId: option.folderId, folderName: path.basename(option.path)})
+    let dirs = (await readdir(option.path)).map(value => path.resolve(option.path, value))
+    const stats = await Promise.all(dirs.map(value => fstat(value)))
+    dirs = dirs.filter((_, index) => stats[index]?.isFile?.())
+    for (const dir of dirs) {
+      await uploadFile({...option, folderId, path: dir})
+    }
+  } else {
+    await uploadFile(option)
+  }
+}
+
+/**
  * @example
  ```
   login().then(() => {
-    upload({path: 'DF1E5B4D-459A-4295-B441-61A93D0CCCA7.png'})
+    uploadFile({path: 'DF1E5B4D-459A-4295-B441-61A93D0CCCA7.png'})
   })
  ```
- * todo: 支持上传文件夹
  */
-export async function upload(option: UploadOption) {
-  if (!(option.size && option.name)) {
-    const stat = await fs.statSync(option.path)
-    option.size = option.size || stat.size
-    option.name = option.name || path.basename(option.path)
-    option.lastModifiedDate = option.lastModifiedDate || stat.mtime
-  }
-  option.folderId = option.folderId || '-1'
+export async function uploadFile(option: UploadOption) {
+  const stat = await fstat(option.path)
+  const name = path.basename(option.path)
+  const size = stat.size
+  const lastModifiedDate = stat.mtime
+  const folderId = option.folderId || '-1'
 
   const file: UploadList = {
-    lastModifiedDate: option.lastModifiedDate,
-    type: option.type,
-    folderId: option.folderId,
-    size: option.size,
-    name: option.name,
+    type: '',
+    size,
+    name,
+    lastModifiedDate: lastModifiedDate,
+    folderId,
     path: option.path,
     list: [],
   }
@@ -73,14 +101,14 @@ export async function upload(option: UploadOption) {
     path: option.path,
     splitSize: config.splitSize,
     maxSize: config.maxSize,
-    // splitSize: '100k',
-    // maxSize: '100k',
+    // splitSize: '1m',
+    // maxSize: '1m',
     skipSplit: true,
   })
   file.list = splitData.files.map(value => ({
     lastModifiedDate: value.lastModifiedDate,
     type: '',
-    folderId: '',
+    folderId,
     size: value.size,
     name: value.name,
     path: value.sourcePath,
@@ -89,16 +117,8 @@ export async function upload(option: UploadOption) {
   }))
 
   if (file.list.length > 1) {
-    const list = await lsFolder({folderId: option.folderId, limit: 1})
-    const item = list.find(value => value.type === 'dir' && value.name === file.name)
-
-    const folderId = item
-      ? (item as FolderDir).folderId
-      : await mkdir({
-          parentId: option.folderId,
-          folderName: file.name,
-        })
-    file.list = file.list.map(value => ({...value, folderId}))
+    const id = await ensureFolder({folderId, folderName: file.name})
+    file.list = file.list.map(value => ({...value, folderId: id}))
   }
 
   const total = file.list.reduce((prev, value) => prev + value.size, 0)
