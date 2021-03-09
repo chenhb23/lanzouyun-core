@@ -1,0 +1,24 @@
+{
+  "name": "lanzou-rn",
+  "version": "0.0.1",
+  "description": "> TODO: description",
+  "author": "chenhb23 <chenhongbo_1994@163.com>",
+  "homepage": "https://github.com/chenhb23/lanzouyun-core#readme",
+  "license": "MIT",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "src"
+  ],
+  "repository": "https://github.com/chenhb23/lanzouyun-core.git",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "typescript": "^4.2.3"
+  },
+  "devDependencies": {
+    "rn-fetch-blob": "^0.12.0",
+    "typescript": "^4.2.3"
+  }
+}

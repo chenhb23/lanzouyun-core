@@ -1,0 +1,25 @@
+{
+  "name": "library",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "author": "chenhb23 <chenhongbo_1994@163.com>",
+  "homepage": "https://github.com/chenhb23/lanzouyun-core#readme",
+  "license": "ISC",
+  "main": "src/index.ts",
+  "files": [
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chenhb23/lanzouyun-core.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/chenhb23/lanzouyun-core/issues"
+  },
+  "dependencies": {
+    "typescript": "^4.2.3"
+  }
+}
