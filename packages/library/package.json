@@ -1,5 +1,5 @@
 {
-  "name": "library",
+  "name": "@lanzou/library",
   "version": "0.0.0",
   "description": "> TODO: description",
   "author": "chenhb23 <chenhongbo_1994@163.com>",
@@ -14,12 +14,14 @@
     "url": "git+https://github.com/chenhb23/lanzouyun-core.git"
   },
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
-  },
-  "bugs": {
-    "url": "https://github.com/chenhb23/lanzouyun-core/issues"
+    "build": "tsc"
   },
   "dependencies": {
+    "@lanzou/base": "^0.0.0",
+    "rn-fetch-blob": "^0.12.0",
+    "tslib": "^2.1.0"
+  },
+  "devDependencies": {
     "typescript": "^4.2.3"
   }
 }

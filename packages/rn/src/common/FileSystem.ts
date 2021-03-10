@@ -1,4 +1,4 @@
-import {FileSystemBase} from '../../../core/src/common/FileSystemBase'
+import {FileSystemBase} from '@lanzou/core'
 import RNFetchBlob from 'rn-fetch-blob'
 
 export class FileSystem extends FileSystemBase {
@@ -6,6 +6,9 @@ export class FileSystem extends FileSystemBase {
     super()
     this.cacheDir = RNFetchBlob.fs.dirs.CacheDir
   }
+
+  cacheDir: string
+
   exists(path: string): Promise<boolean> {
     return RNFetchBlob.fs.exists(path)
   }

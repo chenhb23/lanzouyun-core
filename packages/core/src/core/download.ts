@@ -2,6 +2,7 @@ import {parseUrl, html, match} from '../util/utils'
 import {Event} from '../util/Event'
 import {Chain} from '../util/Chain'
 import {common, StatefulPromise} from '../common'
+// import {PwdShareFile} from '../types/type'
 
 export interface PageOptions {
   /**

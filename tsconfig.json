@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ESNext",
     "module": "commonjs",
     "lib": [
       "DOM",
@@ -12,9 +12,23 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
+    "moduleResolution": "Node",
     "forceConsistentCasingInFileNames": true,
-    "declaration": true
+    "declaration": true,
+    "baseUrl": "./packages",
+    "paths": {
+      "*": ["*", "./*/src"]
+    }
   },
+  "include": [
+    "./packages/core",
+    "./packages/library",
+    "./packages/library-base",
+    "./packages/node",
+    "./packages/rn",
+    "./packages/rn_test"
+  ],
+  "exclude": ["node_modules"],
   "ts-node": {
     "transpileOnly": true
   }

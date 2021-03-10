@@ -1,4 +1,4 @@
-import {PathBase} from '../../../core/src'
+import {PathBase} from '@lanzou/core'
 import RNFetchBlob from 'rn-fetch-blob'
 
 export class Path extends PathBase {
@@ -6,6 +6,8 @@ export class Path extends PathBase {
     super()
     this.sep = '/'
   }
+
+  sep: string
 
   /**
    * 把路径变为绝对路径，只允许一个参数

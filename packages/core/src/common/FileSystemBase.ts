@@ -1,6 +1,5 @@
 export abstract class FileSystemBase {
   cacheDir: string
-
   abstract mkdir(path: string, option?: {recursive: true}): Promise<void>
   abstract exists(path: string): Promise<boolean>
 

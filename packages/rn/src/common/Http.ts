@@ -9,7 +9,7 @@ import {
   StatefulPromise,
   Event,
   stringify,
-} from '../../../core/src'
+} from '@lanzou/core'
 import RNFetchBlob from 'rn-fetch-blob'
 
 export class Http extends HttpBase {

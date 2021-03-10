@@ -11,7 +11,9 @@ import {
   HttpUploadOptions,
   StatefulPromise,
   Event,
-} from 'lanzou-core'
+  UploadRes,
+  LzResponse,
+} from '@lanzou/core'
 import fs from 'fs'
 import path from 'path'
 

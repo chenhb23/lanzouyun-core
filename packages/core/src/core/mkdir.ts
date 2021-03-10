@@ -1,4 +1,5 @@
 import {common} from '../common'
+// import {LzResponse} from '../types/api'
 
 export interface MkdirOption {
   parentId: string

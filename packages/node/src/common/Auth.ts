@@ -1,4 +1,4 @@
-import {AuthBase} from 'lanzou-core'
+import {AuthBase} from '@lanzou/core'
 import fs from 'fs'
 import readline from 'readline'
 import child_process from 'child_process'
@@ -23,6 +23,8 @@ export class Auth extends AuthBase {
     super()
     this.cookie = fs.existsSync(authFile) ? fs.readFileSync(authFile).toString() : ''
   }
+
+  cookie: string
 
   login(cookie): Promise<string> {
     return new Promise((resolve, reject) => {

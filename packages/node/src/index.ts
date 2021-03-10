@@ -1,5 +1,5 @@
 import './common'
-import {common, download, lsShareUrl, upload} from 'lanzou-core'
+import {common, download, lsShareUrl, upload} from '@lanzou/core'
 import path from 'path'
 
 // lsShareUrl({

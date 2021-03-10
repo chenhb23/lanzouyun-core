@@ -1,4 +1,7 @@
-import {AuthBase} from '@lanzou/core'
+import {AuthBase} from '@lanzou/base'
+
+// console.log('rn-fetch-blob', require('rn-fetch-blob'))
+
 import RNFetchBlob from 'rn-fetch-blob'
 
 const authFile = '.lanzou_auth'

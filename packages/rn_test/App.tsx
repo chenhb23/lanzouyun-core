@@ -23,82 +23,47 @@ import RNFetchBlob from 'rn-fetch-blob';
 import {match} from './util';
 import querystring from 'querystring';
 
-// console.log(require('lanzou-core'));
-// import('../core/src/config').then((value) => {
-//   console.log('value', value);
-// });
+console.log(RNFetchBlob);
 
-// import {Auth} from './rn/Auth';
-// import {FileSystem} from './rn/FileSystem';
-// import {Http} from './rn/Http';
-// import {Path} from './rn/Path';
-// import {lsShareUrl, common} from '@lanzou/core';
-// import {Auth} from 'rn/src/common/Auth';
-// import {FileSystem} from 'rn/src/common/FileSystem';
-// import {Http} from 'rn/src/common/Http';
-// import {Path} from 'rn/src/common/Path';
-// import {Auth, FileSystem, Http, Path} from '../rn';
-// import {lsShareUrl, common} from '../core/src';
-// import {lsShareUrl, common} from 'core';
-import {testLibrary} from 'library';
+import {Auth} from '@lanzou/library';
+
+console.log(new Auth());
+
+// console.log(common);
+// // test2();
+// common.path = new Path();
+// common.http = new Http();
+// common.auth = new Auth();
+// common.fs = new FileSystem();
+// console.log('lsShareUrl', lsShareUrl);
+// console.log(common.path.extname('name.txt'));
+
+// console.log('join', new Path().join('/aaa', 'bb'));
+// console.log(pathCommon.extname('abc.txt'));
+
+// import {common, lsShareUrl} from '@lanzou/core';
+// import {common} from '@lanzou/rn';
+// console.log(common);
+
+// console.log(Path);
+//
+// common.path = new Path();
+
+// console.log(require('@lanzou/core'));
 // common.set({
 //   auth: new Auth(),
 //   fs: new FileSystem(),
 //   http: new Http(),
 //   path: new Path(),
 // });
-//
-// console.log('common', common.auth);
-
-// RNFetchBlob.fs.slice();
-
-// RNFetchBlob.fs.ls('/').then((value) => console.log(value));
-// RNFetchBlob.fetch();
-// RNFetchBlob.fs.stat('/').then((value) => {
-//   console.log(value);
+// Object.assign(common, {
+//   auth: new Auth(),
+//   fs: new FileSystem(),
+//   http: new Http(),
+//   path: new Path(),
 // });
-// console.log(RNFetchBlob.fs.dirs);
-
-// RNFetchBlob.fetch().progress();
-
-console.log(RNFetchBlob.fs.dirs);
-
-// RNFetchBlob.fs
-//   .ls(
-//     // Platform.OS === 'ios'
-//     //   ? RNFetchBlob.fs.dirs.CacheDir +
-//     //       '/org.reactjs.native.example.pin-app/Cache.db'
-//     //   : RNFetchBlob.fs.dirs.CacheDir,
-//     '.',
-//   )
-//   .then((value) => {
-//     console.log('ls', value);
-//     // RNFetchBlob.fs.dirs
-//     // RNFetchBlob.fs.readStream();
-//   });
-
-// RNFetchBlob.fs.slice();
-
-// RNFetchBlob.fs.as
-
-// RNFetchBlob.fs
-//   .stat(
-//     RNFetchBlob.fs.dirs.CacheDir +
-//       '/org.reactjs.native.example.pin-app/Cache.db',
-//   )
-//   .then((value) => {
-//     console.log('stat', value);
-//   });
 
 const html = (url) => fetch(url).then((value) => value.text());
-
-// function parseUrl(url) {
-//   const uri = new URL(url);
-//   return {
-//     origin: uri.origin,
-//     id: uri.pathname.replace(/^\//, ''),
-//   };
-// }
 
 function getRealDownloadUrl(pageDownloadUrl) {
   return fetch(pageDownloadUrl, {
@@ -123,19 +88,17 @@ const App = () => {
   const [imgUrl, setImgUrl] = useState('');
 
   useEffect(() => {
-    // console.log()
-    testLibrary();
-    // lsShareUrl({
-    //   url: 'https://wws.lanzous.com/b01tpeg7i',
-    //   // path: 'bai.img',
-    //   // pwd: 'g24j',
-    // })
-    //   .then((value) => {
-    //     console.log('lsShareUrl', value);
+    //   lsShareUrl({
+    //     url: 'https://wws.lanzous.com/b01tpeg7i',
+    //     // path: 'bai.img',
+    //     // pwd: 'g24j',
     //   })
-    //   .catch((reason) => {
-    //     console.log('reason', reason);
-    //   });
+    //     .then((value) => {
+    //       console.log('lsShareUrl', value);
+    //     })
+    //     .catch((reason) => {
+    //       console.log('reason', reason);
+    //     });
   });
 
   const test = async () => {

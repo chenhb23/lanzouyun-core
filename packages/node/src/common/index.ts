@@ -1,4 +1,4 @@
-import {common} from 'lanzou-core'
+import {common} from '@lanzou/core'
 import {FileSystem} from './FileSystem'
 import {Http} from './Http'
 import {Path} from './Path'

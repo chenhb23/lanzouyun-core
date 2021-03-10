@@ -1,5 +1,5 @@
 {
-  "name": "lanzou-core",
+  "name": "@lanzou/core",
   "version": "0.0.1",
   "description": "蓝奏云核心库",
   "keywords": [
@@ -9,9 +9,9 @@
   ],
   "author": "chenhb23 <chenhongbo_1994@163.com>",
   "homepage": "https://github.com/chenhb23/lanzouyun-core#readme",
-  "license": "MIT",
+  "license": "ISC",
   "main": "src/index.ts",
-  "types": "src/index.ts",
+  "typings": "src/index.ts",
   "files": [
     "src"
   ],
@@ -26,6 +26,6 @@
   },
   "dependencies": {
     "form-data": "^4.0.0",
-    "typescript": "^4.2.3"
+    "tslib": "^2.1.0"
   }
 }

@@ -1,8 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "./lib",
-    "importHelpers": true
+    "outDir": "./lib"
   },
   "exclude": ["node_modules"]
 }

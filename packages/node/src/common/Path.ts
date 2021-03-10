@@ -1,4 +1,4 @@
-import {PathBase} from 'lanzou-core'
+import {PathBase} from '@lanzou/core'
 import path from 'path'
 
 export class Path extends PathBase {
@@ -6,6 +6,8 @@ export class Path extends PathBase {
     super()
     this.sep = path.sep
   }
+
+  sep: string
 
   resolve(p: string) {
     return Promise.resolve(path.resolve(p))

@@ -1,4 +1,4 @@
-import {FileSystemBase} from 'lanzou-core'
+import {FileSystemBase} from '@lanzou/core'
 import fs from 'fs'
 import {promisify} from 'util'
 import * as os from 'os'
@@ -8,6 +8,8 @@ export class FileSystem extends FileSystemBase {
     super()
     this.cacheDir = os.tmpdir()
   }
+
+  cacheDir: string
 
   exists(path): Promise<boolean> {
     return Promise.resolve(fs.existsSync(path))

@@ -1,5 +1,7 @@
 import {delay, html, match, parseUrl} from '../util/utils'
 import {common} from '../common'
+// import {PwdShareFile, ShareFolderFile} from '../types/type'
+// import {LzResponse, Task47, Task47Data, Task5, Task5Data} from '../types/api'
 
 export interface LsShareOption {
   url: string

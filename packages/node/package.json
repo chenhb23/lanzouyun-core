@@ -1,5 +1,5 @@
 {
-  "name": "lanzou-node",
+  "name": "@lanzou/node",
   "version": "0.0.1",
   "description": "> TODO: description",
   "author": "chenhb23 <chenhongbo_1994@163.com>",
@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "form-data": "^4.0.0",
-    "typescript": "^4.2.3"
+    "tslib": "^2.1.0"
   },
   "devDependencies": {
     "@types/form-data": "^2.5.0",

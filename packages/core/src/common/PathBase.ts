@@ -25,6 +25,6 @@ export abstract class PathBase {
   extname(p: string): string {
     if (!/\.\w+$/.test(p)) return ''
     const arr = p.split('.')
-    return arr[arr.length - 1]
+    return `.${arr[arr.length - 1]}`
   }
 }
