@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react'
 import {
   SafeAreaView,
   StyleSheet,
@@ -16,18 +16,20 @@ import {
   StatusBar,
   Button,
   Image,
-} from 'react-native';
+} from 'react-native'
 
-import {Colors} from 'react-native/Libraries/NewAppScreen';
-import RNFetchBlob from 'rn-fetch-blob';
-import {match} from './util';
-import querystring from 'querystring';
+import {Colors} from 'react-native/Libraries/NewAppScreen'
+import RNFetchBlob from 'rn-fetch-blob'
+import {match} from './util'
+import querystring from 'querystring'
 
-console.log(RNFetchBlob);
+// console.log(RNFetchBlob);
 
-import {Auth} from '@lanzou/library';
+// import {Auth} from '@lanzou/library';
+//
+// console.log(new Auth());
 
-console.log(new Auth());
+// console.log(require('@lanzou/rn'));
 
 // console.log(common);
 // // test2();
@@ -49,6 +51,25 @@ console.log(new Auth());
 //
 // common.path = new Path();
 
+import {
+  Auth,
+  FileSystem,
+  Http,
+  Path,
+  common,
+  lsShareUrl,
+  upload,
+  getPageDownloadUrl,
+  // getRealDownloadUrl,
+  download,
+} from '@lanzou/rn'
+common.set({
+  auth: new Auth(),
+  fs: new FileSystem(),
+  http: new Http(),
+  path: new Path(),
+})
+
 // console.log(require('@lanzou/core'));
 // common.set({
 //   auth: new Auth(),
@@ -63,134 +84,104 @@ console.log(new Auth());
 //   path: new Path(),
 // });
 
-const html = (url) => fetch(url).then((value) => value.text());
-
-function getRealDownloadUrl(pageDownloadUrl) {
-  return fetch(pageDownloadUrl, {
-    method: 'GET',
-    headers: {
-      accept: 'application/octet-stream, */*; q=0.01',
+// const html = url => fetch(url).then(value => value.text())
+//
+// function getRealDownloadUrl(pageDownloadUrl) {
+//   return fetch(pageDownloadUrl, {
+//     method: 'GET',
+//     headers: {
+//       accept: '*/*; q=0.01',
+//       'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+//       'accept-language': 'zh-CN,zh;q=0.9',
+//       pragma: 'no-cache',
+//       'sec-fetch-dest': 'empty',
+//       'sec-fetch-mode': 'cors',
+//       'sec-fetch-site': 'same-origin',
+//     },
+//   }).then(value => {
+//     // console.log(value.headers);
+//     console.log(value)
+//     return value.url
+//   })
+// }
+function getRealDownloadUrl(pageDownloadUrl: string) {
+  return RNFetchBlob.config({fileCache: true})
+    .fetch('GET', pageDownloadUrl, {
+      accept: '*/*; q=0.01',
       'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
       'accept-language': 'zh-CN,zh;q=0.9',
       pragma: 'no-cache',
       'sec-fetch-dest': 'empty',
       'sec-fetch-mode': 'cors',
       'sec-fetch-site': 'same-origin',
-    },
-  }).then((value) => {
-    // console.log(value.headers);
-    // console.log(value);
-    return value.url;
-  });
+    })
+    .then(value => {
+      console.log('valueaa', value.path())
+      return value.path()
+    })
 }
 
+// RNFetchBlob.config()
+
 const App = () => {
-  const [imgUrl, setImgUrl] = useState('');
+  const [imgUrl, setImgUrl] = useState('')
 
   useEffect(() => {
-    //   lsShareUrl({
-    //     url: 'https://wws.lanzous.com/b01tpeg7i',
-    //     // path: 'bai.img',
-    //     // pwd: 'g24j',
+    // lsShareUrl({
+    //   url: 'https://wws.lanzous.com/b01tpeg7i',
+    //   // path: 'bai.img',
+    //   // pwd: 'g24j',
+    // })
+    //   .then((value) => {
+    //     console.log(value.list);
     //   })
-    //     .then((value) => {
-    //       console.log('lsShareUrl', value);
-    //     })
-    //     .catch((reason) => {
-    //       console.log('reason', reason);
-    //     });
-  });
+    //   .catch((reason) => {
+    //     console.log('reason', reason);
+    //   });
+    // const dir = RNFetchBlob.fs.dirs.CacheDir + '/lanzou.txt';
+    // RNFetchBlob.fs.createFile(dir, '文本文件', 'utf8');
+    // RNFetchBlob.fs.ls(RNFetchBlob.fs.dirs.CacheDir).then((value) => {
+    //   console.log(value);
+    // });
+    // upload({
+    //   path: dir,
+    //   onProgress: (value) => {
+    //     console.log(value);
+    //   },
+    // }).then((value) => console.log(value));
+  })
 
   const test = async () => {
-    // RNFetchBlob.fetch('post', )
-    const url = 'https://wws.lanzous.com/iGUlnmklw7c';
-    const origin = 'https://wws.lanzous.com';
-    // console.log('origin', origin);
-    const shareHTML = await html(url);
-    const iframe = match.iframe(shareHTML);
-
-    const iframeUrl = `${origin}${iframe}`;
-
-    const downHTML = await html(iframeUrl);
-    // console.log(downHTML);
-    const sign = match.sign(downHTML);
-    const signs = match.signs(downHTML);
-    const websign = match.websign(downHTML);
-    const ves = match.ves(downHTML);
-
-    // fetch('', {
-    //   body: ''
-    // })
-
-    const res = await RNFetchBlob.fetch(
-      'POST',
-      `${origin}/ajaxm.php`,
-      {
-        accept: 'application/json, text/javascript, */*; q=0.01',
-        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        'accept-language': 'zh-CN,zh;q=0.9',
-        pragma: 'no-cache',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        referer: iframeUrl,
-      },
-      querystring.stringify({
-        action: 'downprocess',
-        signs,
-        sign,
-        ves,
-        websign,
-      }),
-      // querystring.stringify({
-      //   action: 'downprocess',
-      //   signs,
-      //   sign,
-      //   ves,
-      //   websign,
-      // }),
-    );
-    const response = JSON.parse(res.data);
-    // console.log(typeof response);
-    // console.log(response);
-    const downloadUrl = `${response.dom}/file/${response.url}`;
-    const downUrl = await getRealDownloadUrl(downloadUrl);
-    setImgUrl(downUrl);
-    console.log(downloadUrl);
-  };
+    const url = 'https://wws.lanzous.com/iZ8Irmh59eh'
+    // const url = 'https://wws.lanzous.com/iIsdEmg3iti'
+    const downUrl = await getPageDownloadUrl({url})
+    console.log(downUrl)
+    const realUrl = await getRealDownloadUrl(downUrl)
+    console.log('downUrl', realUrl)
+    // download()
+    setImgUrl(`file://${realUrl}`)
+    // setImgUrl(realUrl)
+  }
 
   return (
     <>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle='dark-content' />
       <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          {/*<Header />*/}
-          {/*{global.HermesInternal == null ? null : (*/}
-          {/*  <View style={styles.engine}>*/}
-          {/*    <Text style={styles.footer}>Engine: Hermes</Text>*/}
-          {/*  </View>*/}
-          {/*)}*/}
+        <ScrollView contentInsetAdjustmentBehavior='automatic' style={styles.scrollView}>
           <Button onPress={test} title={'test'} />
           <View
             style={{
               width: 200,
               height: 200,
-              // , backgroundColor: 'red'
-            }}>
-            {!!imgUrl && (
-              <Image
-                source={{uri: imgUrl}}
-                style={{width: '100%', height: '100%'}}
-              />
-            )}
+            }}
+          >
+            {!!imgUrl && <Image source={{uri: imgUrl}} style={{width: '100%', height: '100%'}} />}
           </View>
         </ScrollView>
       </SafeAreaView>
     </>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   scrollView: {
@@ -229,6 +220,6 @@ const styles = StyleSheet.create({
     paddingRight: 12,
     textAlign: 'right',
   },
-});
+})
 
-export default App;
+export default App

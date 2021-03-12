@@ -4,19 +4,14 @@
   "description": "> TODO: description",
   "author": "chenhb23 <chenhongbo_1994@163.com>",
   "homepage": "https://github.com/chenhb23/lanzouyun-core#readme",
-  "license": "ISC",
+  "license": "MIT",
   "main": "src/index.ts",
-  "typings": "src/index.ts",
-  "files": [
-    "src"
-  ],
   "repository": "https://github.com/chenhb23/lanzouyun-core.git",
   "scripts": {
     "build": "tsc"
   },
   "dependencies": {
-    "@lanzou/core": "^0.0.1",
-    "tslib": "^2.1.0"
+    "@lanzou/core": "^0.0.1"
   },
   "devDependencies": {
     "rn-fetch-blob": "^0.12.0",

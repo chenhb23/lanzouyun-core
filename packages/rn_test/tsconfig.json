@@ -2,14 +2,6 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./build",
-    "jsx": "react",
-    "baseUrl": "..",
-    "paths": {
-      "@lanzou/core": ["core"],
-      "@lanzou/rn": ["rn"],
-      "@lanzou/library": ["library"],
-      "@lanzou/base": ["library-base"],
-    },
-  },
-  "exclude": ["node_modules"]
+    "jsx": "react"
+  }
 }

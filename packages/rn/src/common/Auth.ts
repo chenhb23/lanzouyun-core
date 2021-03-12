@@ -8,9 +8,10 @@ const tempCookie =
 export class Auth extends AuthBase {
   constructor() {
     super()
-    RNFetchBlob.fs.readFile(authFile, 'utf8').then(value => {
-      this.cookie = value || tempCookie
-    })
+    // RNFetchBlob.fs.readFile(authFile, 'utf8').then(value => {
+    //   this.cookie = value || tempCookie
+    // })
+    this.cookie = tempCookie
   }
 
   cookie: string

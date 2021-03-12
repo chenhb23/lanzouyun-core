@@ -3,7 +3,7 @@
     "packages/*"
   ],
   "npmClient": "yarn",
-  "version": "0.0.0",
+  "version": "independent",
   "command": {
     "bootstrap": {
       "npmClientArgs": [

@@ -70,7 +70,10 @@ export async function getPageDownloadUrl(option: PageOptions): Promise<string> {
 export function getRealDownloadUrl(pageDownloadUrl: string) {
   return common.http
     .request({url: pageDownloadUrl, method: 'GET', headers: {accept: 'application/octet-stream, */*; q=0.01'}})
-    .then(({headers}) => headers.location)
+    .then(({headers}) => {
+      console.log(headers)
+      return headers.location
+    })
 }
 
 export interface DownloadOption {

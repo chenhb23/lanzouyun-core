@@ -11,8 +11,8 @@ import {
   HttpUploadOptions,
   StatefulPromise,
   Event,
-  UploadRes,
-  LzResponse,
+  // UploadRes,
+  // LzResponse,
 } from '@lanzou/core'
 import fs from 'fs'
 import path from 'path'
@@ -26,7 +26,13 @@ function parseJson(str) {
 }
 
 export class Http extends HttpBase {
-  request<T, B>({headers, body, url, method, onProgress}: HttpOptions<B>): StatefulPromise<HttpResponse<T>> {
+  request<T = any, B = any>({
+    headers,
+    body,
+    url,
+    method,
+    onProgress,
+  }: HttpOptions<B>): StatefulPromise<HttpResponse<T>> {
     const event = new Event()
     const promise = new Promise((resolve, reject) => {
       const reqHeaders = {...baseHeaders, cookie: common.auth.cookie, ...headers}

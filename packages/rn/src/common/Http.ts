@@ -13,7 +13,7 @@ import {
 import RNFetchBlob from 'rn-fetch-blob'
 
 export class Http extends HttpBase {
-  request<T, B = any>(options: HttpOptions<B>): StatefulPromise<HttpResponse<T>> {
+  request<T = any, B = any>(options: HttpOptions<B>): StatefulPromise<HttpResponse<T>> {
     const event = new Event()
     const promise = new Promise<HttpResponse<T>>((resolve, reject) => {
       const handle = RNFetchBlob.fetch(
@@ -27,13 +27,18 @@ export class Http extends HttpBase {
         reject()
       })
       handle
-        .then(value =>
+        .then(value => {
+          console.log('value.path()', value)
           resolve({
             json: async () => value.json(),
             text: async () => value.text(),
-            headers: value.respInfo.headers,
+            headers: {
+              ...value.respInfo.headers,
+              location:
+                value.respInfo.headers.location ?? value.respInfo.redirects?.[value.respInfo.redirects.length - 1],
+            },
           })
-        )
+        })
         .catch(reject)
     }) as StatefulPromise<HttpResponse<T>>
     promise.cancel = () => event.emit('cancel')

@@ -35,11 +35,18 @@ export interface HttpUploadOptions {
 export abstract class HttpBase {
   // abstract get<T, B>(option: HttpOption<B>): Promise<T>
   // abstract post<T, B>(option: HttpOption<B>): Promise<T>
-  abstract request<T, B = any>(options: HttpOptions<B>): StatefulPromise<HttpResponse<T>>
+  abstract request<T = any, B = any>(options: HttpOptions<B>): StatefulPromise<HttpResponse<T>>
 
   abstract download(options: HttpDownloadOptions): StatefulPromise<void>
 
   abstract upload(options: HttpUploadOptions): StatefulPromise<any>
+
+  urlCache = {
+    xxxxxxxx: {
+      url: '',
+      expire: new Date(),
+    },
+  }
 }
 
 export const baseHeaders = {
