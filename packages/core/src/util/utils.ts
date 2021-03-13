@@ -116,3 +116,7 @@ export function stringify(obj: Record<string, any>) {
 export function dispositionFileName(disposition: string) {
   return decodeURIComponent(disposition).split(';')?.[1]?.split('filename=')?.[1]?.trim()
 }
+
+// export function wrap(path: string) {
+//   return path.startsWith('file://') ? path : `file://${path}`
+// }

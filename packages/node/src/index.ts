@@ -1,5 +1,5 @@
 import {Auth, FileSystem, Http, Path} from './common'
-import {common, download, getPageDownloadUrl, getRealDownloadUrl, lsShareUrl, upload, File} from '@lanzou/core'
+import {common, download, getPageDownloadUrl, getRealDownloadUrl, lsShareUrl, upload, Cache} from '@lanzou/core'
 import path from 'path'
 
 // const url =
@@ -14,7 +14,7 @@ common.set({
   path: new Path(),
 })
 
-const file = new File()
+const file = new Cache()
 
 setTimeout(async () => {
   // const pageUrl = await getPageDownloadUrl({url: 'https://wws.lanzous.com/izUmEmhxu7e'})
@@ -24,7 +24,7 @@ setTimeout(async () => {
   // common.http.download({url}).then(value => {
   //   console.log('value', value)
   // })
-  file.fetch('https://wws.lanzous.com/izUmEmhxu7e').then(value => {
+  file.file('https://wws.lanzous.com/izUmEmhxu7e').then(value => {
     console.log(value)
   })
 }, 1000)

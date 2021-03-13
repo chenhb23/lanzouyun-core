@@ -67,7 +67,7 @@ export async function getPageDownloadUrl(option: PageOptions): Promise<string> {
 /**
  * 需要设置 header accept: application/octet-stream
  */
-export function getRealDownloadUrl(pageDownloadUrl: string) {
+export function getRealDownloadUrl(pageDownloadUrl: string): Promise<string> {
   return common.http
     .request({
       url: pageDownloadUrl,

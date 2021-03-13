@@ -35,7 +35,7 @@ import {
   // getRealDownloadUrl,
   download,
   Storage,
-  File,
+  Cache,
   getRealDownloadUrl,
   baseHeaders,
   PersistGate,
@@ -63,7 +63,7 @@ class Container {
 
 const con = new Container()
 
-const file = new File()
+const cache = new Cache()
 
 const App = () => {
   const [imgUrl, setImgUrl] = useState('')
@@ -83,10 +83,16 @@ const App = () => {
     //     setImgUrl(value.path)
     //   })
     // }, 1000)
-    file.fetch('https://wws.lanzous.com/izUmEmhxu7e').then(value => {
+
+    cache.file('https://wws.lanzous.com/izUmEmhxu7e').then(value => {
       console.log('value', value)
-      setImgUrl(value.path)
+      setImgUrl('file://' + value.path)
     })
+
+    // cache.url('https://wws.lanzous.com/izUmEmhxu7e').then(value => {
+    //   console.log('value', value)
+    //   setImgUrl(value.url)
+    // })
   }, [])
 
   const test = async () => {
