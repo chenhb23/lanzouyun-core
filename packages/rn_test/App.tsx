@@ -23,34 +23,6 @@ import RNFetchBlob from 'rn-fetch-blob'
 import {match} from './util'
 import querystring from 'querystring'
 
-// console.log(RNFetchBlob);
-
-// import {Auth} from '@lanzou/library';
-//
-// console.log(new Auth());
-
-// console.log(require('@lanzou/rn'));
-
-// console.log(common);
-// // test2();
-// common.path = new Path();
-// common.http = new Http();
-// common.auth = new Auth();
-// common.fs = new FileSystem();
-// console.log('lsShareUrl', lsShareUrl);
-// console.log(common.path.extname('name.txt'));
-
-// console.log('join', new Path().join('/aaa', 'bb'));
-// console.log(pathCommon.extname('abc.txt'));
-
-// import {common, lsShareUrl} from '@lanzou/core';
-// import {common} from '@lanzou/rn';
-// console.log(common);
-
-// console.log(Path);
-//
-// common.path = new Path();
-
 import {
   Auth,
   FileSystem,
@@ -62,6 +34,9 @@ import {
   getPageDownloadUrl,
   // getRealDownloadUrl,
   download,
+  Storage,
+  File,
+  getRealDownloadUrl,
 } from '@lanzou/rn'
 common.set({
   auth: new Auth(),
@@ -69,6 +44,84 @@ common.set({
   http: new Http(),
   path: new Path(),
 })
+
+class Container {
+  cache = {}
+
+  get<T>(con: {new (): T}): T {
+    if (!this.cache[con.name]) {
+      this.cache[con.name] = new con()
+    }
+
+    return this.cache[con.name]
+  }
+}
+
+const con = new Container()
+
+// const a = con.get(FileSystem)
+//
+// const b = con.get(FileSystem)
+
+// console.log('a === b', a === b)
+
+// const storage = new Storage('db.json')
+
+// RNFetchBlob.fs.unlink('aaa.json').then(value => {
+//   console.log('finish', value)
+// })
+
+// RNFetchBlob.fetch('get', 'https://leleleyu.gitee.io/lanzou/auth.json', {
+//   accept:
+//     'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+//   'accept-language': 'zh-CN,zh;q=0.9',
+//   'cache-control': 'no-cache',
+//   pragma: 'no-cache',
+//   'sec-ch-ua': '"Google Chrome";v="89", "Chromium";v="89", ";Not A Brand";v="99"',
+//   'sec-ch-ua-mobile': '?0',
+//   'sec-fetch-dest': 'document',
+//   'sec-fetch-mode': 'navigate',
+//   'sec-fetch-site': 'none',
+//   'sec-fetch-user': '?1',
+//   'upgrade-insecure-requests': '1',
+// }).then(value => {
+//   console.log(value)
+// })
+
+// fetch('https://leleleyu.gitee.io/lanzou/auth.json')
+//   .then(value => value.text())
+//   .then(value => console.log(value))
+
+// fetch('https://leleleyu.gitee.io/lanzou/auth.json', {
+//   headers: {
+//     accept:
+//       'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+//     'accept-language': 'zh-CN,zh;q=0.9',
+//     'cache-control': 'no-cache',
+//     pragma: 'no-cache',
+//     'sec-ch-ua': '"Google Chrome";v="89", "Chromium";v="89", ";Not A Brand";v="99"',
+//     'sec-ch-ua-mobile': '?0',
+//     'sec-fetch-dest': 'document',
+//     'sec-fetch-mode': 'navigate',
+//     'sec-fetch-site': 'none',
+//     'sec-fetch-user': '?1',
+//     'upgrade-insecure-requests': '1',
+//     'user-agent':
+//       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36',
+//   },
+//   referrerPolicy: 'strict-origin-when-cross-origin',
+//   body: null,
+//   method: 'GET',
+//   mode: 'cors',
+//   credentials: 'include',
+// })
+//   .then(value => value.text())
+//   .then(console.log)
+
+// global.common = common
+//
+// const a = eval(`console.log(global.common)`)
+// console.log('a', a)
 
 // console.log(require('@lanzou/core'));
 // common.set({
@@ -104,24 +157,25 @@ common.set({
 //     return value.url
 //   })
 // }
-function getRealDownloadUrl(pageDownloadUrl: string) {
-  return RNFetchBlob.config({fileCache: true})
-    .fetch('GET', pageDownloadUrl, {
-      accept: '*/*; q=0.01',
-      'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-      'accept-language': 'zh-CN,zh;q=0.9',
-      pragma: 'no-cache',
-      'sec-fetch-dest': 'empty',
-      'sec-fetch-mode': 'cors',
-      'sec-fetch-site': 'same-origin',
-    })
-    .then(value => {
-      console.log('valueaa', value.path())
-      return value.path()
-    })
-}
+// function getRealDownloadUrl(pageDownloadUrl: string) {
+//   return RNFetchBlob.config({fileCache: true})
+//     .fetch('GET', pageDownloadUrl, {
+//       accept: '*/*; q=0.01',
+//       'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+//       'accept-language': 'zh-CN,zh;q=0.9',
+//       pragma: 'no-cache',
+//       'sec-fetch-dest': 'empty',
+//       'sec-fetch-mode': 'cors',
+//       'sec-fetch-site': 'same-origin',
+//     })
+//     .then(value => {
+//       console.log('valueaa', value.path())
+//       return value.path()
+//     })
+// }
 
 // RNFetchBlob.config()
+// const file = new File()
 
 const App = () => {
   const [imgUrl, setImgUrl] = useState('')
@@ -129,6 +183,7 @@ const App = () => {
   useEffect(() => {
     // lsShareUrl({
     //   url: 'https://wws.lanzous.com/b01tpeg7i',
+    //   url: 'https://wws.lanzous.com/izUmEmhxu7e',
     //   // path: 'bai.img',
     //   // pwd: 'g24j',
     // })
@@ -149,18 +204,47 @@ const App = () => {
     //     console.log(value);
     //   },
     // }).then((value) => console.log(value));
+
+    // storage.getItem('ab').then(value => {
+    //   console.log('vallue', value)
+    // })
+    setTimeout(async () => {
+      // console.log("storage.getItem('list')", storage.getItem('list'))
+      // storage.setItem('list', JSON.stringify(['a', 'b', 'c3', 3]))
+      // storage.clear()
+      // file.fetch('http://www.baidu.com/zxxxxx1').then(value => {
+      //   console.log('fetch4', value)
+      // })
+      // const pageUrl = await getPageDownloadUrl({url: 'https://wws.lanzous.com/izUmEmhxu7e'})
+      // console.log('pageUrl', pageUrl)
+      // common.http.download({
+      //   url: pageUrl,
+      // })
+    }, 1000)
+
+    // storage.saveData('ab', 'abbb').then(() => {
+    //   console.log('save finish')
+    // })
+
+    // down.saveFile()
+    // console.log('down.cache4', storage.cache)
+    // down.saveFile({test: 'abc'})
+    // setTimeout(async () => {
+    //   // await down.saveFile({test2: 'aaaaaaa'})
+    //   console.log('finish2')
+    // }, 1000)
   })
 
   const test = async () => {
-    const url = 'https://wws.lanzous.com/iZ8Irmh59eh'
-    // const url = 'https://wws.lanzous.com/iIsdEmg3iti'
-    const downUrl = await getPageDownloadUrl({url})
-    console.log(downUrl)
-    const realUrl = await getRealDownloadUrl(downUrl)
-    console.log('downUrl', realUrl)
-    // download()
-    setImgUrl(`file://${realUrl}`)
-    // setImgUrl(realUrl)
+    // const url = 'https://wws.lanzous.com/iZ8Irmh59eh'
+    // // const url = 'https://wws.lanzous.com/iIsdEmg3iti'
+    // const downUrl = await getPageDownloadUrl({url})
+    // console.log(downUrl)
+    // const realUrl = await getRealDownloadUrl(downUrl)
+    // console.log('downUrl', realUrl)
+    // // download()
+    // setImgUrl(`file://${realUrl}`)
+    // // setImgUrl(realUrl)
   }
 
   return (

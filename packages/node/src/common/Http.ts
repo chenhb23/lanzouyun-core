@@ -11,11 +11,13 @@ import {
   HttpUploadOptions,
   StatefulPromise,
   Event,
+  dispositionFileName,
   // UploadRes,
   // LzResponse,
 } from '@lanzou/core'
 import fs from 'fs'
 import path from 'path'
+import os from 'os'
 
 function parseJson(str) {
   try {
@@ -73,18 +75,19 @@ export class Http extends HttpBase {
     return promise
   }
 
-  download(options: HttpDownloadOptions) {
+  download(options: HttpDownloadOptions): StatefulPromise<{name: string; path: string}> {
     const event = new Event()
     const promise = new Promise((resolve, reject) => {
       https.get(options.url, res => {
         const total = +res.headers['content-length']
-        const fileName = decodeURIComponent(
-          res.headers['content-disposition'].split(';')?.[1]?.split('filename=')?.[1]?.trim()
-        )
+        const fileName = dispositionFileName(res.headers['content-disposition'])
         // option.onStateChange?.({state: 3, length: total, disposition: fileName})
 
-        fs.mkdirSync(path.dirname(options.path), {recursive: true})
-        const file = fs.createWriteStream(options.path)
+        const downloadPath = options.path ?? path.join(os.tmpdir(), `${Date.now()}`)
+        if (options.path) {
+          fs.mkdirSync(path.dirname(options.path), {recursive: true}) // 如果有 recursive，如果目录存在都不会报错
+        }
+        const file = fs.createWriteStream(downloadPath)
 
         event.once('cancel', () => {
           res.destroy()
@@ -98,7 +101,7 @@ export class Http extends HttpBase {
         res.on('end', () => {
           file.end() // 将内存中的内容全部写入，然后关闭文件
           // option.onStateChange?.({state: 4})
-          resolve()
+          resolve({path: downloadPath, name: fileName})
         })
         res.on('error', () => {
           // option.onStateChange?.({state: 5})
@@ -106,7 +109,7 @@ export class Http extends HttpBase {
         })
         res.pipe(file)
       })
-    }) as StatefulPromise<void>
+    }) as StatefulPromise<{name: string; path: string}>
     promise.cancel = () => event.emit('cancel')
 
     return promise

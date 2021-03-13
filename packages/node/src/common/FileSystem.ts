@@ -2,20 +2,22 @@ import {FileSystemBase} from '@lanzou/core'
 import fs from 'fs'
 import {promisify} from 'util'
 import * as os from 'os'
+import path from 'path'
 
 export class FileSystem extends FileSystemBase {
-  constructor() {
-    super()
-    this.cacheDir = os.tmpdir()
+  getCacheDir(): string {
+    return os.tmpdir()
   }
 
-  cacheDir: string
+  getDocumentDir(): string {
+    return path.resolve('.')
+  }
 
-  exists(path): Promise<boolean> {
+  exists(path: string): Promise<boolean> {
     return Promise.resolve(fs.existsSync(path))
   }
 
-  mkdir(path, option): Promise<void> {
+  mkdir(path: string, option?: {recursive: true}): Promise<void> {
     return new Promise((resolve, reject) => {
       fs.mkdir(path, option, err => {
         if (err) reject(err)
@@ -24,8 +26,10 @@ export class FileSystem extends FileSystemBase {
     })
   }
 
-  rm(path): Promise<void> {
-    return promisify(fs.unlink)(path)
+  async rm(path: string): Promise<void> {
+    if (await this.exists(path)) {
+      return promisify(fs.unlink)(path)
+    }
   }
 
   stat(path: string): Promise<{isFile: boolean; isDirectory: boolean; size: number; mtime: Date}> {
@@ -47,7 +51,7 @@ export class FileSystem extends FileSystemBase {
     return promisify(fs.readdir)(path)
   }
 
-  writeFile(option): Promise<void> {
+  copy(option: {source: string; target: string; start?: number; end?: number; flags?: 'w' | 'a'}): Promise<void> {
     return new Promise((resolve, reject) => {
       const ws = fs.createWriteStream(option.target, {flags: option.flags || 'w'})
       const rs = fs.createReadStream(option.source, option.end ? {start: option.start, end: option.end} : undefined)
@@ -56,5 +60,16 @@ export class FileSystem extends FileSystemBase {
       rs.on('error', reject)
       rs.pipe(ws)
     })
+  }
+
+  async writeFile(p: string, data: string): Promise<void> {
+    if (!(await this.exists(path.dirname(p)))) {
+      await this.mkdir(p, {recursive: true})
+    }
+    return promisify(fs.writeFile)(p, data)
+  }
+
+  readFile(path: string): Promise<any> {
+    return promisify(fs.readFile)(path).then(value => value.toString())
   }
 }

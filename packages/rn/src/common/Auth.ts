@@ -12,6 +12,7 @@ export class Auth extends AuthBase {
     //   this.cookie = value || tempCookie
     // })
     this.cookie = tempCookie
+    // new Storage()
   }
 
   cookie: string
@@ -37,3 +38,7 @@ export class Auth extends AuthBase {
     return true
   }
 }
+
+// common.set({auth: new Auth()})
+
+// const storage = new Storage()

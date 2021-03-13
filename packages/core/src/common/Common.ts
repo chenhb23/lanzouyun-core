@@ -26,3 +26,22 @@ export const common = new Common()
 //   path: PathBase
 //   auth: AuthBase
 // }
+
+// export class Common {
+//   private cache = {}
+//
+//   get<T>(Class: {new (...args: any[]): T}): T {
+//     if (!this.cache[Class.name]) {
+//       this.cache[Class.name] = new Class()
+//     }
+//     return this.cache[Class.name]
+//   }
+//
+//   init<T>(Class: {new (...args: T[])}, ...options: T[]) {
+//     if (!this.cache[Class.name]) {
+//       this.cache[Class.name] = new Class(...options)
+//     }
+//   }
+// }
+//
+// export const common = new Common()

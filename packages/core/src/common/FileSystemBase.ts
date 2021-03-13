@@ -1,5 +1,9 @@
 export abstract class FileSystemBase {
-  cacheDir: string
+  static name2 = 'FileSystemBase'
+
+  abstract getCacheDir(): string
+  abstract getDocumentDir(): string
+
   abstract mkdir(path: string, option?: {recursive: true}): Promise<void>
   abstract exists(path: string): Promise<boolean>
 
@@ -9,7 +13,7 @@ export abstract class FileSystemBase {
 
   abstract readdir(path: string): Promise<string[]>
 
-  abstract writeFile(option: {
+  abstract copy(option: {
     source: string
     target: string
     start?: number
@@ -18,4 +22,8 @@ export abstract class FileSystemBase {
       | 'w' // 覆盖（默认）
       | 'a' // 追加
   }): Promise<void>
+
+  abstract writeFile(path: string, data: string): Promise<void>
+
+  abstract readFile(path: string): Promise<any>
 }

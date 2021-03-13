@@ -16,12 +16,18 @@ export interface HttpResponse<T> {
 }
 
 export interface HttpDownloadOptions {
+  /**
+   * 真实的下载链接
+   */
   url: string
-  path: string
+  path?: string
   onProgress?: (received: number, total: number) => void
 }
 
 export interface HttpUploadOptions {
+  /**
+   * 上传文件的路径
+   */
   path: string
   folderId: string
   start?: number
@@ -37,16 +43,9 @@ export abstract class HttpBase {
   // abstract post<T, B>(option: HttpOption<B>): Promise<T>
   abstract request<T = any, B = any>(options: HttpOptions<B>): StatefulPromise<HttpResponse<T>>
 
-  abstract download(options: HttpDownloadOptions): StatefulPromise<void>
+  abstract download(options: HttpDownloadOptions): StatefulPromise<{name: string; path: string}>
 
   abstract upload(options: HttpUploadOptions): StatefulPromise<any>
-
-  urlCache = {
-    xxxxxxxx: {
-      url: '',
-      expire: new Date(),
-    },
-  }
 }
 
 export const baseHeaders = {
@@ -57,4 +56,6 @@ export const baseHeaders = {
   'sec-fetch-dest': 'empty',
   'sec-fetch-mode': 'cors',
   'sec-fetch-site': 'same-origin',
+  'user-agent':
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36',
 }

@@ -9,6 +9,7 @@ import {
   StatefulPromise,
   Event,
   stringify,
+  dispositionFileName,
 } from '@lanzou/core'
 import RNFetchBlob from 'rn-fetch-blob'
 
@@ -28,7 +29,6 @@ export class Http extends HttpBase {
       })
       handle
         .then(value => {
-          console.log('value.path()', value)
           resolve({
             json: async () => value.json(),
             text: async () => value.text(),
@@ -46,29 +46,71 @@ export class Http extends HttpBase {
     return promise
   }
 
-  download(options: HttpDownloadOptions): StatefulPromise<void> {
+  download(options: HttpDownloadOptions): StatefulPromise<{name: string; path: string}> {
     const event = new Event()
-    const promise = new Promise((resolve, reject) => {
-      RNFetchBlob.fs
-        .exists(options.path)
-        .then(exists => {
-          if (!exists) return RNFetchBlob.fs.mkdir(options.path)
-        })
-        .then(() => {
-          const handle = RNFetchBlob.config({
-            fileCache: true,
-            path: options.path,
-          }).fetch('get', options.url)
-          event.once('cancel', () => {
-            handle.cancel()
-            reject()
-          })
-          if (typeof options.onProgress === 'function') {
-            handle.progress(options.onProgress)
-          }
-          handle.then(() => resolve()).catch(reject)
-        })
-    }) as StatefulPromise<void>
+
+    const promise = new Promise(async (resolve, reject) => {
+      if (options.path) {
+        const exists = await RNFetchBlob.fs.exists(options.path)
+        if (!exists) await RNFetchBlob.fs.mkdir(options.path)
+      }
+      const handle = RNFetchBlob.config(options.path ? {fileCache: true, path: options.path} : {fileCache: true}).fetch(
+        'get',
+        options.url
+      )
+      event.once('cancel', () => {
+        handle.cancel()
+        reject()
+      })
+      if (typeof options.onProgress === 'function') {
+        handle.progress(options.onProgress)
+      }
+      const value = await handle
+      console.log(value)
+      resolve({
+        path: options.path ?? value.path(),
+        name: '',
+        // name: dispositionFileName(value.respInfo.headers),
+      })
+
+      // handle
+      //   .then(value => {
+      //
+      //     resolve({
+      //       path: value.path(),
+      //       // name: dispositionFileName(value.respInfo.headers),
+      //     })
+      //   })
+      //   .catch(reject)
+
+      // RNFetchBlob.fs
+      //   .exists(options.path)
+      //   .then(exists => {
+      //     if (!exists) return RNFetchBlob.fs.mkdir(options.path)
+      //   })
+      //   .then(() => {
+      //     const handle = RNFetchBlob.config({
+      //       fileCache: true,
+      //       path: options.path,
+      //     }).fetch('get', options.url)
+      //     event.once('cancel', () => {
+      //       handle.cancel()
+      //       reject()
+      //     })
+      //     if (typeof options.onProgress === 'function') {
+      //       handle.progress(options.onProgress)
+      //     }
+      //     handle
+      //       .then(value => {
+      //
+      //         resolve({
+      //           path: value.path(),
+      //           // name: dispositionFileName(value.respInfo.headers),
+      //         })
+      //       })
+      //       .catch(reject)
+      //   });
+    }) as StatefulPromise<{name: string; path: string}>
     promise.cancel = () => event.emit('cancel')
     return promise
   }

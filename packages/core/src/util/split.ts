@@ -85,7 +85,7 @@ export async function split(option: SplitOption): Promise<SplitData> {
     ? await common.fs
         .exists(option.outputPath)
         .then(value => (!value ? option.outputPath : common.path.resolve(option.outputPath)))
-    : common.path.join(common.fs.cacheDir, common.path.basename(option.path, common.path.extname(option.path)))
+    : common.path.join(common.fs.getCacheDir(), common.path.basename(option.path, common.path.extname(option.path)))
 
   splitData.isFile = false
   if (!option.skipSplit && !(await common.fs.exists(outputPath))) {
@@ -113,7 +113,7 @@ export async function split(option: SplitOption): Promise<SplitData> {
   if (!option.skipSplit) {
     await Promise.all(
       splitData.files.map(value =>
-        common.fs.writeFile({
+        common.fs.copy({
           source: value.sourcePath,
           target: value.path,
           start: value.startByte,

@@ -112,3 +112,7 @@ export function stringify(obj: Record<string, any>) {
     .map(key => `${key}=${obj[key]}`)
     .join('&')
 }
+
+export function dispositionFileName(disposition: string) {
+  return decodeURIComponent(disposition).split(';')?.[1]?.split('filename=')?.[1]?.trim()
+}

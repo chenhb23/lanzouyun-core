@@ -24,7 +24,9 @@ export interface PageOptions {
  */
 export async function getPageDownloadUrl(option: PageOptions): Promise<string> {
   const {origin} = parseUrl(option.url)
+  console.log('origin', origin)
   const shareHTML = option.html || (await html(option.url))
+  console.log('s', shareHTML)
 
   const iframe = match.iframe(shareHTML)
   const data = match.data(shareHTML)
@@ -33,6 +35,7 @@ export async function getPageDownloadUrl(option: PageOptions): Promise<string> {
     const iframeUrl = `${origin}${iframe}`
 
     const downHTML = await html(iframeUrl)
+    console.log('downHTML', downHTML)
     const sign = match.sign(downHTML)
     const signs = match.signs(downHTML)
     const websign = match.websign(downHTML)

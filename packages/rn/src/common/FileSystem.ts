@@ -1,13 +1,14 @@
-import {FileSystemBase} from '@lanzou/core'
+import {common, FileSystemBase} from '@lanzou/core'
 import RNFetchBlob from 'rn-fetch-blob'
 
 export class FileSystem extends FileSystemBase {
-  constructor() {
-    super()
-    this.cacheDir = RNFetchBlob.fs.dirs.CacheDir
+  getCacheDir(): string {
+    return RNFetchBlob.fs.dirs.CacheDir
   }
 
-  cacheDir: string
+  getDocumentDir(): string {
+    return RNFetchBlob.fs.dirs.DocumentDir
+  }
 
   exists(path: string): Promise<boolean> {
     return RNFetchBlob.fs.exists(path)
@@ -23,6 +24,7 @@ export class FileSystem extends FileSystemBase {
   }
 
   rm(path: string): Promise<void> {
+    // rn 不需要判断是否存在文件
     return RNFetchBlob.fs.unlink(path)
   }
 
@@ -35,7 +37,7 @@ export class FileSystem extends FileSystemBase {
     }))
   }
 
-  async writeFile(option: {source: string; target: string; start?: number; end?: number; flags?: 'w' | 'a'}) {
+  async copy(option: {source: string; target: string; start?: number; end?: number; flags?: 'w' | 'a'}) {
     if (!option.target) {
       await this.mkdir(option.target)
     }
@@ -45,4 +47,14 @@ export class FileSystem extends FileSystemBase {
       await RNFetchBlob.fs.cp(option.source, option.target)
     }
   }
+
+  writeFile(path: string, data: string): Promise<void> {
+    return RNFetchBlob.fs.writeFile(path, data, 'utf8')
+  }
+
+  readFile(path: string): Promise<any> {
+    return RNFetchBlob.fs.readFile(path, 'utf8')
+  }
 }
+
+// common.set({fs: new FileSystem()})

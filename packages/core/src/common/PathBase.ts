@@ -1,13 +1,10 @@
-/**
- * path need full path
- */
 export abstract class PathBase {
   sep: string
 
   abstract resolve(p: string): Promise<string>
 
   join(...paths: string[]): string {
-    return paths.map((value, index) => (index === 0 ? value : value.replace(/^\.\//, ''))).join(this.sep)
+    return paths.map((value, index) => (index === 0 ? value : value.replace(/(^\.)?\//, ''))).join(this.sep)
   }
 
   basename(p: string, ext?: string): string {

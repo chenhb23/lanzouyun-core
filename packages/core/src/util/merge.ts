@@ -49,7 +49,7 @@ export async function merge(option: MergeOption) {
   // for (const file of paths) {
   for (let i = 0; i < paths.length; i++) {
     const file = paths[i]
-    await common.fs.writeFile({
+    await common.fs.copy({
       source: option.outputPath,
       target: file,
       flags: i === 0 ? 'w' : 'a',
