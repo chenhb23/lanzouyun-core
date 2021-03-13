@@ -1,4 +1,4 @@
-import {PathBase} from '@lanzou/core'
+import {common, PathBase} from '@lanzou/core'
 import RNFetchBlob from 'rn-fetch-blob'
 
 export class Path extends PathBase {
@@ -16,3 +16,5 @@ export class Path extends PathBase {
     return RNFetchBlob.fs.stat(p).then(value => value.path)
   }
 }
+
+common.set({path: new Path()})

@@ -10,6 +10,7 @@ import {
   Event,
   stringify,
   dispositionFileName,
+  HttpDownloadData,
 } from '@lanzou/core'
 import RNFetchBlob from 'rn-fetch-blob'
 
@@ -17,7 +18,7 @@ export class Http extends HttpBase {
   request<T = any, B = any>(options: HttpOptions<B>): StatefulPromise<HttpResponse<T>> {
     const event = new Event()
     const promise = new Promise<HttpResponse<T>>((resolve, reject) => {
-      const handle = RNFetchBlob.fetch(
+      const handle = RNFetchBlob.config({followRedirect: options.followRedirect ?? true}).fetch(
         options.method,
         options.url,
         {...baseHeaders, cookie: common.auth.cookie, ...options.headers},
@@ -32,11 +33,10 @@ export class Http extends HttpBase {
           resolve({
             json: async () => value.json(),
             text: async () => value.text(),
-            headers: {
-              ...value.respInfo.headers,
-              location:
-                value.respInfo.headers.location ?? value.respInfo.redirects?.[value.respInfo.redirects.length - 1],
-            },
+            headers: Object.keys(value.respInfo.headers).reduce(
+              (prev, key) => ({...prev, [key.toLowerCase()]: value.respInfo.headers[key]}),
+              {}
+            ),
           })
         })
         .catch(reject)
@@ -46,7 +46,7 @@ export class Http extends HttpBase {
     return promise
   }
 
-  download(options: HttpDownloadOptions): StatefulPromise<{name: string; path: string}> {
+  download(options: HttpDownloadOptions): StatefulPromise<HttpDownloadData> {
     const event = new Event()
 
     const promise = new Promise(async (resolve, reject) => {
@@ -66,51 +66,12 @@ export class Http extends HttpBase {
         handle.progress(options.onProgress)
       }
       const value = await handle
-      console.log(value)
       resolve({
         path: options.path ?? value.path(),
-        name: '',
-        // name: dispositionFileName(value.respInfo.headers),
+        name: dispositionFileName(value.respInfo.headers?.['Content-Disposition']),
+        size: +value.respInfo.headers?.['Content-Length'] || 0,
       })
-
-      // handle
-      //   .then(value => {
-      //
-      //     resolve({
-      //       path: value.path(),
-      //       // name: dispositionFileName(value.respInfo.headers),
-      //     })
-      //   })
-      //   .catch(reject)
-
-      // RNFetchBlob.fs
-      //   .exists(options.path)
-      //   .then(exists => {
-      //     if (!exists) return RNFetchBlob.fs.mkdir(options.path)
-      //   })
-      //   .then(() => {
-      //     const handle = RNFetchBlob.config({
-      //       fileCache: true,
-      //       path: options.path,
-      //     }).fetch('get', options.url)
-      //     event.once('cancel', () => {
-      //       handle.cancel()
-      //       reject()
-      //     })
-      //     if (typeof options.onProgress === 'function') {
-      //       handle.progress(options.onProgress)
-      //     }
-      //     handle
-      //       .then(value => {
-      //
-      //         resolve({
-      //           path: value.path(),
-      //           // name: dispositionFileName(value.respInfo.headers),
-      //         })
-      //       })
-      //       .catch(reject)
-      //   });
-    }) as StatefulPromise<{name: string; path: string}>
+    }) as StatefulPromise<HttpDownloadData>
     promise.cancel = () => event.emit('cancel')
     return promise
   }
@@ -153,3 +114,5 @@ export class Http extends HttpBase {
     return promise
   }
 }
+
+common.set({http: new Http()})

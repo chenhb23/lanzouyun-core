@@ -1,23 +1,32 @@
-import './common'
-import {common, download, lsShareUrl, upload} from '@lanzou/core'
+import {Auth, FileSystem, Http, Path} from './common'
+import {common, download, getPageDownloadUrl, getRealDownloadUrl, lsShareUrl, upload, File} from '@lanzou/core'
 import path from 'path'
 
-// lsShareUrl({
-//   url: 'https://wws.lanzous.com/b01tpeg7i',
-//   // path: 'bai.img',
-//   // pwd: 'g24j',
-// }).then(value => {
-//   console.log(value)
-// })
+// const url =
+//   'https://vip.d0.baidupan.com/file/?CW9bZVtqUmMFDFRsAjddMVRrAztUQlcYBkYAWVA0ADkANVFEWkZTMAUQV0MGZVAQUz0CPl4sUWIAKVY6UHwBZQluWyJbalJ8BSpULAIsXTVUfgMgVG1XPAZtAGNQUwBoAGRRO1o0Uz4FZlcwBmRQYFM/AjNeJ1E1AHRWbVA9ATEJPls4WzZSMAVhVCQCJl0sVDMDNFQ7V2cGMAApUDwAMgAvUTZaM1MoBWJXZQY0UGZTMAIzXjdRZgA3VjJQbQFhCT5bbVtgUmcFMVQ3Am5daFQ+A2dUPldiBjAAMVA0ADEAY1EwWmFTPwV9V3sGO1AhUy8Ccl5yUTYAdVY5UGgBPQk4WztbNlI0BWNUNAJlXXpUegNvVGZXMAZnADtQPQA3ADFRM1oxUzYFZlc4BmZQYlMnAileJ1E1AGtWJ1AxATEJP1s9WzNSMAViVDYCZl1vVDsDIFR+VyUGdgA7UD0ANwAxUTJaP1MxBWtXMwZjUGhTLwJyXmhRIwA6VmJQPgEyCSdbOlszUigFYVQzAmJdclQ3AzY='
+// const url =
+//   'https://dev46.baidupan.com/031313bb/2021/03/04/1df794650baa7afab5840a571780c6f8.zip?st=ButrvxRu5fosCqZErf-0TA&e=1615617050&b=BR4LRlQTUAoEaVY4B2JSFFZCD2QHRQtPA2cMQFRnADtSLVloU31WOVZzAzBXYActVG0KLFEpAysGL105AnU_c&fi=39516164&pid=222-65-214-90&up='
 
-common.auth.setCookie(
-  'UM_distinctid=175c95f41fd754-0cc79e716268d2-326f7907-280000-175c95f41fedcb; ylogin=1702063; _uab_collina=161483959881027039336908; folder_id_c=-1; phpdisk_info=BDFQZQRmUW9UZgJkWzJSAQVhV1xdNQBvV2xTMgIzCzFXYAQ1VzFSbAE6UAlaNFRtB2cGMwxjVGZSZVUyAjwAZgRjUGsEYVE8VGICYls4Um4FYldnXTwAZldiUzQCYgtqVzIENVcyUj0BO1BlWglUPwdvBjwMZFQ0UmlVNgI3ADYEMlBr; CNZZDATA1253610886=1166807045-1614868956-https%253A%252F%252Fpc.woozooo.com%252F%7C1615167207'
-)
+common.set({
+  auth: new Auth(),
+  fs: new FileSystem(),
+  http: new Http(),
+  path: new Path(),
+})
 
-// upload({
-//   path: '4.0.0.zip',
-// }).then(value => {
-//   console.log('value', value)
-// })
+const file = new File()
 
-// console.log(path.basename('/usr/local/test.txt', '.tsxt'))
+setTimeout(async () => {
+  // const pageUrl = await getPageDownloadUrl({url: 'https://wws.lanzous.com/izUmEmhxu7e'})
+  // console.log('pageUrl', pageUrl)
+  // const url = await getRealDownloadUrl(pageUrl)
+  // console.log('url', url)
+  // common.http.download({url}).then(value => {
+  //   console.log('value', value)
+  // })
+  file.fetch('https://wws.lanzous.com/izUmEmhxu7e').then(value => {
+    console.log(value)
+  })
+}, 1000)
+
+// getRealDownloadUrl()

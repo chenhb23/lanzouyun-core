@@ -1,23 +1,26 @@
-import {Event} from '../util/Event'
+import {Event, EventFn} from '../util/Event'
 import {common} from '../common/Common'
 
 export class Storage extends Event {
-  private readonly filePath: string
+  private filePath: string
   private data: {[key: string]: string} = {}
+
+  /**
+   * 数据恢复后改值变为 true
+   */
   public isReady = false
 
-  constructor(filePath = common.path.join(common.fs.getDocumentDir(), 'db.json')) {
+  constructor(filePath?: string) {
     super()
-    console.log('common.path', common.path)
+    common.once('init', () => this.init(filePath))
+  }
+
+  private async init(filePath = common.path.join(common.fs.getDocumentDir(), 'db.json')) {
+    if (this.isReady) return
     this.filePath = ['/users/', '/data/', '/private/'].some(value => filePath.toLowerCase().startsWith(value))
       ? filePath
       : common.path.join(common.fs.getDocumentDir(), filePath)
 
-    this.init()
-    // return Object.assign(this, p)
-  }
-
-  private async init() {
     this.data = await this.readAsJson()
     this.isReady = true
     this.emit('ready')
@@ -39,16 +42,18 @@ export class Storage extends Event {
     }
   }
 
-  clear() {
+  async clear() {
     this.data = {}
-    common.fs.rm(this.filePath)
+    await this.waitForReady()
+    return common.fs.rm(this.filePath)
   }
 
   readFile(path: string) {
     return common.fs.readFile(path)
   }
 
-  writeFile(path: string, data: string) {
+  async writeFile(path: string, data: string) {
+    await this.waitForReady()
     return common.fs.writeFile(path, data)
   }
 
@@ -61,5 +66,31 @@ export class Storage extends Event {
     } catch {
       return {}
     }
+  }
+
+  /**
+   * 等待数据恢复
+   */
+  waitForReady() {
+    return new Promise<void>(resolve => {
+      this.on('ready', resolve)
+    })
+  }
+
+  // 只能调用 super, 调用 this 会 max call stack
+  emit(event: 'ready', ...args)
+  emit(event: string, ...args) {
+    super.emit(event, ...args)
+  }
+
+  on(event: 'ready', fn: EventFn)
+  on(event: string, fn: EventFn) {
+    if (this.isReady) fn()
+    else super.on(event, fn, true)
+  }
+
+  once(event: 'ready', fn: EventFn)
+  once(event: string, fn: EventFn) {
+    super.once(event, fn)
   }
 }

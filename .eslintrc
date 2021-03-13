@@ -21,6 +21,7 @@
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "no-constant-condition": "off",
-        "no-async-promise-executor": "off"
+        "no-async-promise-executor": "off",
+        "@typescript-eslint/ban-ts-comment": "off"
     }
 }

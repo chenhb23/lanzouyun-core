@@ -12,6 +12,7 @@ import {
   StatefulPromise,
   Event,
   dispositionFileName,
+  HttpDownloadData,
   // UploadRes,
   // LzResponse,
 } from '@lanzou/core'
@@ -75,15 +76,15 @@ export class Http extends HttpBase {
     return promise
   }
 
-  download(options: HttpDownloadOptions): StatefulPromise<{name: string; path: string}> {
+  download(options: HttpDownloadOptions): StatefulPromise<HttpDownloadData> {
     const event = new Event()
     const promise = new Promise((resolve, reject) => {
-      https.get(options.url, res => {
-        const total = +res.headers['content-length']
+      https.get(options.url, {headers: {...baseHeaders, accept: 'application/octet-stream, */*; q=0.01'}}, res => {
+        const size = +res.headers['content-length'] || 0
         const fileName = dispositionFileName(res.headers['content-disposition'])
-        // option.onStateChange?.({state: 3, length: total, disposition: fileName})
+        // option.onStateChange?.({state: 3, length: size, disposition: fileName})
 
-        const downloadPath = options.path ?? path.join(os.tmpdir(), `${Date.now()}`)
+        const downloadPath = options.path || path.join(os.tmpdir(), `${Date.now()}`)
         if (options.path) {
           fs.mkdirSync(path.dirname(options.path), {recursive: true}) // 如果有 recursive，如果目录存在都不会报错
         }
@@ -97,11 +98,11 @@ export class Http extends HttpBase {
 
         // todo: 事件节流
         let len = 0
-        res.on('data', chunk => options.onProgress?.((len += chunk.length), total))
+        res.on('data', chunk => options.onProgress?.((len += chunk.length), size))
         res.on('end', () => {
           file.end() // 将内存中的内容全部写入，然后关闭文件
           // option.onStateChange?.({state: 4})
-          resolve({path: downloadPath, name: fileName})
+          resolve({path: downloadPath, name: fileName, size})
         })
         res.on('error', () => {
           // option.onStateChange?.({state: 5})
@@ -109,7 +110,7 @@ export class Http extends HttpBase {
         })
         res.pipe(file)
       })
-    }) as StatefulPromise<{name: string; path: string}>
+    }) as StatefulPromise<HttpDownloadData>
     promise.cancel = () => event.emit('cancel')
 
     return promise
@@ -130,6 +131,7 @@ export class Http extends HttpBase {
       form.append('name', options.name)
       form.append('upload_file', fr, options.name)
 
+      // @ts-ignore
       const handle = this.request<LzResponse<UploadRes[]>>({
         url: `https://up.woozooo.com/fileup.php`,
         method: 'post',

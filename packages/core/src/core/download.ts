@@ -1,7 +1,7 @@
 import {parseUrl, html, match} from '../util/utils'
 import {Event} from '../util/Event'
 import {Chain} from '../util/Chain'
-import {common, StatefulPromise} from '../common'
+import {common, HttpDownloadData, StatefulPromise} from '../common'
 // import {PwdShareFile} from '../types/type'
 
 export interface PageOptions {
@@ -24,9 +24,7 @@ export interface PageOptions {
  */
 export async function getPageDownloadUrl(option: PageOptions): Promise<string> {
   const {origin} = parseUrl(option.url)
-  console.log('origin', origin)
   const shareHTML = option.html || (await html(option.url))
-  console.log('s', shareHTML)
 
   const iframe = match.iframe(shareHTML)
   const data = match.data(shareHTML)
@@ -35,7 +33,6 @@ export async function getPageDownloadUrl(option: PageOptions): Promise<string> {
     const iframeUrl = `${origin}${iframe}`
 
     const downHTML = await html(iframeUrl)
-    console.log('downHTML', downHTML)
     const sign = match.sign(downHTML)
     const signs = match.signs(downHTML)
     const websign = match.websign(downHTML)
@@ -72,9 +69,14 @@ export async function getPageDownloadUrl(option: PageOptions): Promise<string> {
  */
 export function getRealDownloadUrl(pageDownloadUrl: string) {
   return common.http
-    .request({url: pageDownloadUrl, method: 'GET', headers: {accept: 'application/octet-stream, */*; q=0.01'}})
+    .request({
+      url: pageDownloadUrl,
+      method: 'GET',
+      headers: {accept: 'application/octet-stream, */*; q=0.01'},
+      followRedirect: false,
+    })
     .then(({headers}) => {
-      console.log(headers)
+      // console.log(headers)
       return headers.location
     })
 }
@@ -82,9 +84,9 @@ export function getRealDownloadUrl(pageDownloadUrl: string) {
 export interface DownloadOption {
   url: string
   /**
-   * 保存的路径
+   * 保存的路径，如果缺省则保存到临时目录
    */
-  path: string
+  path?: string
 
   pwd?: string
   onStateChange?: (
@@ -118,7 +120,7 @@ export interface DownloadOption {
  */
 export function download(option: DownloadOption) {
   const event = new Event()
-  const promise = new Promise<void>((resolve, reject) => {
+  const promise = new Promise((resolve, reject) => {
     const chain = new Chain()
     event.once('cancel', () => {
       chain.cancel()
@@ -132,46 +134,17 @@ export function download(option: DownloadOption) {
       .add(url => getRealDownloadUrl(url))
       .add(realUrl => (option.onStateChange?.({state: 2, url: realUrl}), realUrl))
       .add(realUrl => {
-        // todo: download
+        // todo: 事件节流, onStateChange
         const handle = common.http.download({
           url: realUrl,
           path: option.path,
+          onProgress: option.onProgress,
         })
         event.once('cancel', handle.cancel)
-        return handle
-
-        // https.get(realUrl, res => {
-        //   const total = +res.headers['content-length']
-        //   const fileName = decodeURIComponent(
-        //     res.headers['content-disposition'].split(';')?.[1]?.split('filename=')?.[1]?.trim()
-        //   )
-        //   option.onStateChange?.({state: 3, length: total, disposition: fileName})
-        //
-        //   fs.mkdirSync(path.dirname(option.path), {recursive: true})
-        //   const file = fs.createWriteStream(option.path)
-        //
-        //   event.once('cancel', () => {
-        //     res.destroy()
-        //     file.destroy()
-        //   })
-        //
-        //   // todo: 事件节流
-        //   let len = 0
-        //   res.on('data', chunk => option.onProgress?.((len += chunk.length), total))
-        //   res.on('end', () => {
-        //     file.end() // 将内存中的内容全部写入，然后关闭文件
-        //     option.onStateChange?.({state: 4})
-        //     resolve()
-        //   })
-        //   res.on('error', () => {
-        //     option.onStateChange?.({state: 5})
-        //     reject()
-        //   })
-        //   res.pipe(file)
-        // })
+        handle.then(resolve, reject)
       })
       .start()
-  }) as StatefulPromise<void>
+  }) as StatefulPromise<HttpDownloadData>
   promise.cancel = () => event.emit('cancel')
 
   return promise

@@ -5,9 +5,7 @@
  * @format
  */
 
-const {
-  applyConfigForLinkedDependencies,
-} = require('@carimus/metro-symlinked-deps');
+const {applyConfigForLinkedDependencies} = require('@carimus/metro-symlinked-deps')
 
 module.exports = applyConfigForLinkedDependencies(
   {
@@ -24,5 +22,5 @@ module.exports = applyConfigForLinkedDependencies(
     projectRoot: __dirname,
     blacklistLinkedModules: ['react-native'],
     resolveNodeModulesAtRoot: true,
-  },
-);
+  }
+)

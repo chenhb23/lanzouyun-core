@@ -8,6 +8,10 @@ export interface HttpOptions<B> {
   headers?: Record<string, any>
   body?: B
   onProgress?: (received: number) => void
+  /**
+   * @default true
+   */
+  followRedirect?: boolean
 }
 export interface HttpResponse<T> {
   json: () => Promise<T>
@@ -22,6 +26,12 @@ export interface HttpDownloadOptions {
   url: string
   path?: string
   onProgress?: (received: number, total: number) => void
+}
+
+export interface HttpDownloadData {
+  name: string
+  path: string
+  size: number
 }
 
 export interface HttpUploadOptions {
@@ -43,7 +53,7 @@ export abstract class HttpBase {
   // abstract post<T, B>(option: HttpOption<B>): Promise<T>
   abstract request<T = any, B = any>(options: HttpOptions<B>): StatefulPromise<HttpResponse<T>>
 
-  abstract download(options: HttpDownloadOptions): StatefulPromise<{name: string; path: string}>
+  abstract download(options: HttpDownloadOptions): StatefulPromise<HttpDownloadData>
 
   abstract upload(options: HttpUploadOptions): StatefulPromise<any>
 }

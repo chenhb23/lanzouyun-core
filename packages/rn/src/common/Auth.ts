@@ -1,4 +1,4 @@
-import {AuthBase} from '@lanzou/core'
+import {AuthBase, common} from '@lanzou/core'
 import RNFetchBlob from 'rn-fetch-blob'
 
 const authFile = '.lanzou_auth'
@@ -8,11 +8,7 @@ const tempCookie =
 export class Auth extends AuthBase {
   constructor() {
     super()
-    // RNFetchBlob.fs.readFile(authFile, 'utf8').then(value => {
-    //   this.cookie = value || tempCookie
-    // })
     this.cookie = tempCookie
-    // new Storage()
   }
 
   cookie: string
@@ -39,6 +35,4 @@ export class Auth extends AuthBase {
   }
 }
 
-// common.set({auth: new Auth()})
-
-// const storage = new Storage()
+common.set({auth: new Auth()})

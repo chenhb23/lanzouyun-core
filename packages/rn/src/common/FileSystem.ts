@@ -57,4 +57,4 @@ export class FileSystem extends FileSystemBase {
   }
 }
 
-// common.set({fs: new FileSystem()})
+common.set({fs: new FileSystem()})

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "ES6",
     "module": "commonjs",
     "lib": [
       "DOM",
@@ -14,22 +14,8 @@
     "skipLibCheck": true,
     "moduleResolution": "Node",
     "forceConsistentCasingInFileNames": true,
-    "declaration": true,
-    "sourceMap": true,
-    "baseUrl": "./packages",
-    "paths": {
-      "*": ["*", "./*/src"]
-    }
+    "declaration": true
   },
-  "include": [
-    "./packages/core",
-    "./packages/library",
-    "./packages/library-base",
-    "./packages/node",
-    "./packages/rn",
-    "./packages/rn_test"
-  ],
-  "exclude": ["node_modules"],
   "ts-node": {
     "transpileOnly": true
   }
