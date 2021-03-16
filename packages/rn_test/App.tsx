@@ -23,6 +23,15 @@ import RNFetchBlob from 'rn-fetch-blob'
 import {match} from './util'
 import querystring from 'querystring'
 
+import {DB, registry} from 'gitee-db'
+import Video from 'react-native-video'
+
+registry({
+  access_token: '21e8f219106aae2ad7d5ecde9f2dfecf',
+  owner: 'leleleyu',
+  repo: 'lanzou',
+})
+
 import {
   Auth,
   FileSystem,
@@ -83,13 +92,36 @@ const App = () => {
     //     setImgUrl(value.path)
     //   })
     // }, 1000)
+    // http://vjs.zencdn.net/v/oceans.mp4
 
-    cache.file('https://wws.lanzous.com/izUmEmhxu7e').then(value => {
-      console.log('value', value)
-      setImgUrl('file://' + value.path)
+    const videoUrl = 'https://wws.lanzous.com/ijhdFmzhcfg'
+
+    // cache.file('https://wws.lanzous.com/izUmEmhxu7e').then(async value => {
+    cache.file(videoUrl).then(async value => {
+      console.log(value)
+      // setImgUrl(value.path)
+      if (!(await common.fs.exists(value.path + '.mp4'))) {
+        await common.fs.copy({
+          source: value.path,
+          target: value.path + '.mp4',
+        })
+        common.fs.rm(value.path)
+      }
+
+      setImgUrl('file://' + value.path + '.mp4')
+      // const db = new DB()
+      // const table = await db.table('img')
+      // const data = await table.where<typeof value>(value1 => value1.body.name === value.name).findOne()
+      // if (!data) {
+      //   const ins = await table.insert(value)
+      //   console.log('insert', ins)
+      // } else {
+      //   const upd = await table.update(data.id, value)
+      //   console.log('update', upd)
+      // }
     })
 
-    // cache.url('https://wws.lanzous.com/izUmEmhxu7e').then(value => {
+    // cache.url('https://wws.lanzous.com/ijhdFmzhcfg').then(value => {
     //   console.log('value', value)
     //   setImgUrl(value.url)
     // })
@@ -121,10 +153,17 @@ const App = () => {
               height: 200,
             }}
           >
-            {!!imgUrl && <Image source={{uri: imgUrl}} style={{width: '100%', height: '100%'}} />}
+            {/*{!!imgUrl && <Image source={{uri: imgUrl}} style={{width: '100%', height: '100%'}} />}*/}
           </View>
         </ScrollView>
       </SafeAreaView>
+      {!!imgUrl && (
+        <Video
+          source={{uri: imgUrl}}
+          // src={imgUrl}
+          style={{...StyleSheet.absoluteFillObject}}
+        />
+      )}
     </PersistGate>
   )
 }

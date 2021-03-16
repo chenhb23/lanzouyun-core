@@ -1,7 +1,6 @@
-import {common} from '../common/Common'
+import {HttpDownloadData, common} from '../common'
 import {Storage} from './storage'
 import {download, getPageDownloadUrl, getRealDownloadUrl} from './download'
-import {HttpDownloadData} from '../common'
 
 export class Cache {
   private readonly storage: Storage
@@ -11,7 +10,8 @@ export class Cache {
   }
 
   /**
-   * 缓存文件默认有效期1天
+   * 缓存文件并返回本地地址(不带 file:// 开头)，默认有效期1天
+   * 新增后缀参数
    */
   async file(url: string, expire = 1000 * 60 * 60 * 24): Promise<HttpDownloadData> {
     await this.storage.waitForReady()
@@ -69,5 +69,12 @@ export class Cache {
       }
     }
     return getLink()
+  }
+
+  /**
+   * 清除数据并删除本地缓存文件
+   */
+  clear() {
+    return this.storage.clear()
   }
 }

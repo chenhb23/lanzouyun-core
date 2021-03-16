@@ -21,6 +21,9 @@ target 'rn_test' do
   post_install do |installer|
     flipper_post_install(installer)
   end
+
+  # pod 'react-native-video', :path => '../node_modules/react-native-video/react-native-video.podspec'
+  # pod 'react-native-video/VideoCaching', :path => '../node_modules/react-native-video/react-native-video.podspec'
 end
 
 target 'rn_test-tvOS' do
