@@ -17,14 +17,14 @@ common.set({
 const file = new Cache()
 
 setTimeout(async () => {
-  // const pageUrl = await getPageDownloadUrl({url: 'https://wws.lanzous.com/izUmEmhxu7e'})
+  // const pageUrl = await getPageDownloadUrl({url: 'https://wws.lanzous.com/ixET2nvsk6d'})
   // console.log('pageUrl', pageUrl)
   // const url = await getRealDownloadUrl(pageUrl)
   // console.log('url', url)
   // common.http.download({url}).then(value => {
   //   console.log('value', value)
   // })
-  file.file('https://wws.lanzous.com/izUmEmhxu7e').then(value => {
+  file.file('https://wws.lanzous.com/ixET2nvsk6d').then(value => {
     console.log(value)
   })
 }, 1000)

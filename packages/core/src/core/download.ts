@@ -33,18 +33,19 @@ export async function getPageDownloadUrl(option: PageOptions): Promise<string> {
     const iframeUrl = `${origin}${iframe}`
 
     const downHTML = await html(iframeUrl)
-    const sign = match.sign(downHTML)
+    // const sign = match.sign(downHTML)
     const signs = match.signs(downHTML)
     const websign = match.websign(downHTML)
     const ves = match.ves(downHTML)
+    const postdown = match.postdown(downHTML)
+    const websignkey = match.websignkey(downHTML)
 
-    // const {response} = await request<PwdShareFile>(`${origin}/ajaxm.php`, {
     const response = await common.http
       .request<PwdShareFile>({
         url: `${origin}/ajaxm.php`,
         method: 'post',
         headers: {referer: iframeUrl}, // 获取下载链接需要 referer，防盗链
-        body: {action: 'downprocess', signs, sign, ves, websign},
+        body: {action: 'downprocess', signs, sign: postdown, ves, websign, websignkey},
       })
       .then(value => value.json())
     return `${response.dom}/file/${response.url}`
