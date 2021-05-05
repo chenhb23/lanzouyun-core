@@ -12,10 +12,13 @@ function matchByReg(html: string, pattern: RegExp) {
 
 export const match = {
   iframe: (html: string) => matchByReg(html, new RegExp('<iframe[^<>]*src="([/?a-zA-Z0-9_]{9,}?)"[^<>]*>')),
-  // sign: (html: string) => matchByReg(html, new RegExp("'sign':'(.*?)'")),
+  sign: (html: string) => {
+    const signKey = matchByReg(html, new RegExp("'sign':(.*?),"))
+    return signKey ? matchByReg(html, new RegExp(`var ${signKey} = '(.*?)';`)) : ''
+  },
   signs: (html: string) => matchByReg(html, new RegExp("var ajaxdata = '(.*?)';")),
   websign: (html: string) => matchByReg(html, new RegExp("'websign':'(.*?)'")),
-  postdown: (html: string) => matchByReg(html, new RegExp(`var postdown = '(.*?)';`)),
+  // postdown: (html: string) => matchByReg(html, new RegExp(`var postdown = '(.*?)';`)),
   websignkey: (html: string) => matchByReg(html, new RegExp(`'websignkey':'(.*?)'`)),
   ves: (html: string) => matchByReg(html, new RegExp("'ves':(.*?),'")),
   t: (html: string) => {

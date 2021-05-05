@@ -5,7 +5,9 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "lerna run build"
+    "build": "lerna run build",
+    "setup": "lerna bootstrap",
+    "test": "ts-node ./packages/node/src/index.ts"
   },
   "keywords": [
     "lanzouyun",

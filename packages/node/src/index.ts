@@ -17,16 +17,21 @@ common.set({
 const file = new Cache()
 
 setTimeout(async () => {
+  // 无密码
   // const pageUrl = await getPageDownloadUrl({url: 'https://wws.lanzous.com/ixET2nvsk6d'})
   // console.log('pageUrl', pageUrl)
+
+  // 密码目录文件
+  const pageUrl = await getPageDownloadUrl({url: 'https://wwe.lanzous.com/iFh1si3uv5c'})
+  console.log('pageUrl', pageUrl)
   // const url = await getRealDownloadUrl(pageUrl)
   // console.log('url', url)
   // common.http.download({url}).then(value => {
   //   console.log('value', value)
   // })
-  file.file('https://wws.lanzous.com/ixET2nvsk6d').then(value => {
-    console.log(value)
-  })
+  // file.file('https://wws.lanzous.com/ixET2nvsk6d').then(value => {
+  //   console.log(value)
+  // })
 }, 1000)
 
 // getRealDownloadUrl()
